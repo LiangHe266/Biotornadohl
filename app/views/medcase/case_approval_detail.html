@@ -1,0 +1,442 @@
+<style>
+  h4{
+    display: inline-block;
+  }
+  input{
+    border: none;
+    outline:none;
+    font-size: 14px;
+    color: #008000;
+  }
+  ul, li {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .shop-rating {
+    height: 25px;
+    overflow: hidden;
+    zoom: 1;
+    padding: 2px 0;
+    position: relative;
+    z-index: 999;
+    font: 12px Arial;
+    color: #000;
+    line-height: 1.2em
+  }
+  .shop-rating span {
+    height: 23px;
+    display: block;
+    line-height: 23px;
+    float: left;
+  }
+  .shop-rating span.title {
+    width: 125px;
+    text-align: right;
+    margin-right: 5px;
+  }
+  .shop-rating ul {
+    float: left;
+  }
+  .shop-rating .result {
+    margin-left: 20px;
+    padding-top: 2px;
+  }
+  .shop-rating .result span {
+    color: #ff6d02;
+  }
+  .rating-level, .rating-level a {
+    background: url(views/medcase/o_star.png) no-repeat scroll 1000px 1000px;
+  }
+  .rating-level {
+    background-position: 0px 0px;
+    width: 120px;
+    height: 23px;
+    position: relative;
+    z-index: 1000;
+  }
+  .shop-rating .result em {
+    color: #f60;
+    font-family: arial;
+    font-weight: bold;
+  }
+
+  .rating-level li {
+    display: inline;
+  }
+  .rating-level a {
+    line-height: 23px;
+    height: 23px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    text-indent: -999em;
+    *zoom: 1;
+    outline: none;
+  }
+  .rating-level a.one-star {
+    width: 20%;
+    z-index: 6;
+  }
+  .rating-level a.two-stars {
+    width: 40%;
+    z-index: 5;
+  }
+  .rating-level a.three-stars {
+    width: 60%;
+    z-index: 4;
+  }
+  .rating-level a.four-stars {
+    width: 80%;
+    z-index: 3;
+  }
+  .rating-level a.five-stars {
+    width: 100%;
+    z-index: 2;
+  }
+  .rating-level .current-rating, .rating-level a:hover {
+    background-position: 0 -28px
+  }
+  .rating-level a.one-star:hover, .rating-level a.two-stars:hover, .rating-level a.one-star.current-rating, .rating-level a.two-stars.current-rating {
+    background-position: 0 -116px;
+  }
+  .rating-level .three-stars .current-rating, .rating-level .four-stars .current-rating, .rating-level .five-stars .current-rating {
+    background-position: 0 -28px;
+  }
+  .score_mask_show{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1000;
+  }
+  .scroll{
+    height:400px;
+    overflow: auto;
+  }
+</style>
+
+<div class="container mt50">
+  <div class="row">
+
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel">
+        <div class="panel mt2">
+          <div class="panel-body">
+            <legend class="gre" note=">会诊信息">文献信息</legend>
+            <div class="row">
+              <!-- 左边文献详细信息部分 -->
+              <div class="col-md-8" ng-model="request" data-ng-init="loadData();caseDataLoad()">
+                <div class="row mt2">
+                  <div class="col-md-4"><!-- 文献名称 -->
+                    <span style="font-size: 16px;color: #008000;" readonly>{{caseDetail.rows[0][1]}}</span>
+                  </div>
+                  <div class="col-md-4"><!-- 评分 -->
+                    <span>评分：
+                      <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][9]|number:1}}</span>分
+                    </span>
+                    <span>(
+                      <span style="font-size: 14px;color: #008000;">{{caseDetail.count71}}</span>人评分)
+                    </span>
+                  </div>
+                  <div class="col-md-2"><!-- 阅读人数 -->
+                    <span>
+                      <span style="font-size: 14px;color: #008000;">{{caseDetail.count74}}</span>人阅读
+                    </span>
+                  </div>
+                  <div class="col-md-2"><!-- 下载人数 -->
+                    <span>
+                      <span style="font-size: 14px;color: #008000;">{{caseDetail.count73}}</span>人下载
+                    </span>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-3"><!-- 作者 -->
+                    <h4>作者：</h4>
+                    <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][2]}}</span>
+                  </div>
+                  <div class="col-md-3"><!-- 作者单位 -->
+                    <h4>作者单位：</h4>
+                    <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][3]}}</span>
+                  </div>
+                  <div class="col-md-3"><!-- 上传者 -->
+                    <h4>上传者：</h4>
+                    <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][5]}}</span>
+                  </div>
+                  <div class="col-md-3"><!-- 上传时间 -->
+                    <h4>上传时间：</h4>
+                    <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][6]}}</span>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-12"><!-- 关键词 -->
+                    <h4>关键词：</h4>
+                    <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][4]}}</span>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-12"><!-- 文献简述 -->
+                    <h4>文献简述：</h4>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-11 col-md-offset-1"><!-- 文献摘要 -->
+                    <span style="font-size: 14px;color: #008000;">{{caseDetail.rows[0][7]}}</span>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-10"><!-- 文献详情 -->
+                    <h4>文献详情：</h4>
+                  </div>
+                  <div class="col-md-2"><!-- 下载 -->
+                    <button class="btn btn-primary" ng-click="downloadCaseFile();subDownload()" id="download_1" disabled>下载</button>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-12"><!-- 文献详情（图片） -->
+                    <div id="pdfBox">
+                      <a class="media" href="{{casePDFPath}}"></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-4"><!-- 您的评论 -->
+                    <h4>您的评论：</h4>
+                  </div>
+                  <div class="col-md-6"><!-- 文档评分 -->
+                    <h4>评价文档：</h4>
+                    <div class="shop-rating"  style="display: inline-block;position: relative;" data-ng-init="haveScored()">
+                      <span class="title" style="display: none;"></span>
+                      <ul class="rating-level" id="stars2" ng-click="subMyScore()">
+                        <li><a href="javascript:void(0);" class="one-star" data-value="2">2</a></li>
+                        <li><a href="javascript:void(0);" class="two-stars" data-value="4">4</a></li>
+                        <li><a href="javascript:void(0);" class="three-stars" data-value="6">6</a></li>
+                        <li><a href="javascript:void(0);" class="four-stars" data-value="8">8</a></li>
+                        <li><a href="javascript:void(0);" class="five-stars" data-value="10">10</a></li>
+                      </ul>
+                      <span id="stars2-tips" class="result"></span>
+                      <input type="hidden" id="stars2-input" name="b" value="" size="2"/>
+                      <span id="have_scored"></span>
+                      <div id="score_mask"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-2"><!-- 下载 -->
+                    <button class="btn btn-primary" ng-click="downloadCaseFile();subDownload()" id="download_2" disabled>下载</button>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-12"><!-- 您的评论（详情） -->
+                    <textarea rows="3" style="width: 100%" id="myComment"></textarea>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-2 col-md-offset-10"><!-- 发表评论按钮 -->
+                    <button class="btn btn-default" ng-click="subComment()" id="btn-subcom">发表评论</button>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-12"><!-- 用户评价 -->
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h4>用户评价：</h4>
+                      </div>
+                      <div class="col-md-6">
+                        <span style="float: right">(
+                          <span style="font-size: 14px;color: #008000;">{{caseDetail.count72}}</span>人评价)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt2">
+                  <div class="col-md-12"><!-- 用户评价列表 -->
+                    <table class="table datatable table-bordered table-hover" data-ng-init="caseComment()">
+                      <thead>
+                      <tr>
+                        <th width="10%">用户名</th>
+                        <th width="70%">评价</th>
+                        <th width="20%">时间</th>
+                      </tr>
+                      </thead>
+                      <tbody style="display: none">
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row scroll">
+                  <div class="col-md-12">
+                    <table class="table datatable table-bordered table-hover">
+                      <thead style="display: none">
+                      <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr ng-repeat="comment in caseComments track by $index">
+                        <td width="10%">{{comment[1]}}</td>
+                        <td width="70%">{{comment[3]}}</td>
+                        <td width="20%">{{comment[2]}}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <!-- 右边文献评论和相关文章功能 -->
+              <div class="col-md-3 col-md-offset-1">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h4>相关文档推荐</h4><!-- 相关文档推荐 -->
+                    <table class="table datatable table-bordered table-hover" data-ng-init="caseRelative()">
+                      <thead>
+                      <tr>
+                        <th width="80%">文献名称</th>
+                        <th width="20%">评分</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr ng-repeat="item in caseRelation track by $index" ng-dblclick="onClickItem(item)">
+                        <td>{{item[1]}}</td>
+                        <td>{{item[2]|number:1}}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row mt2" data-ng-init="myBookmark()"><!-- 书签功能 -->
+                  <div class="col-md-12">
+                    <h4>我的书签</h4>
+                    <textarea rows="15" style="width: 100%" id="bookmark"></textarea>
+                    <button class="btn btn-sm btn-primary mt2"  style="float: right" ng-click="subBookmark()">保存</button>
+                  </div>
+                </div>
+                <div class="row" id="approval_box" style="display: none">
+                  <div class="col-md-12">
+                    <h4>文献审批</h4>
+                    <div class="mt2">
+                      <button class="btn btn-success" ng-click="casePass()">通过</button>
+                      <button class="btn btn-danger" ng-click="caseReject()">不通过</button>
+                      <button class="btn btn-primary" ng-click="casePush()">推荐</button>
+                      <div class="mt2" id="reject_box" style="display: none">
+                        <span>审批未通过原因（必填）</span>
+                        <textarea rows="10" style="width: 100%" id="reject_info"></textarea>
+                        <button class="btn btn-sm btn-primary mt2"  style="float: right" ng-click="subReject()">确定</button>
+                      </div>
+                      <div class="mt2" id="push_box" style="display: none">
+                        <h4>请上传一张宣传图片</h4>
+                        <table data-ng-init="" class="table datatable table-bordered table-hover" id="upload_detail">
+                          <thead>
+                            <tr>
+                              <th>资料名称</th>
+                              <th>大小</th>
+                              <th>上传进度</th>
+                            </tr>
+                            </thead>
+                          <tbody>
+                          <tr ng-repeat="item in uploader.queue track by $index" id="fi_{{$index}}">
+                              <td>{{item.file.name}}</td>
+                              <td nowrap><a ng-show="uploader.isHTML5">{{ item.file.size/1024/1024|number:2 }} MB</a></td>
+                              <td>
+                                <div class="progress" style="margin-bottom: 0;" ng-show="uploader.isHTML5">
+                                  <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div class="row">
+                          <div class="col-md-12 text-center">
+                            <button class="fileUpload button">
+                              <span>本地上传</span>
+                              <input type="file" id="local_upload" class="upload" nv-file-select uploader="uploader"
+                                     accept=".png,.jpg" multiple/>
+                            </button>
+                            <div></div>
+                            <h4>支持jpg.png格式文件（必须上传文件）</h4>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" id="js_1">
+
+  $(function () {
+    $("#del").modal({
+      //设置点击背景遮罩不关闭弹框
+      backdrop: 'static',
+      //默认不显示
+      show: false
+
+    });
+  });
+  //评分功能
+  var TB = function () {
+    var T$ = function (id) {
+      return document.getElementById(id)
+    };
+    var T$$ = function (r, t) {
+      return (r || document).getElementsByTagName(t)
+    };
+    var Stars = function (cid, rid, hid, config) {
+      var lis = T$$(T$(cid), 'li'), curA;
+      for (var i = 0, len = lis.length; i < len; i++) {
+        lis[i]._val = i;
+        lis[i].onclick = function () {
+          T$(rid).innerHTML = '<em>' + (T$(hid).value = T$$(this, 'a')[0].getAttribute('data-value')) + '分</em> - ' + config.info[this._val];
+          curA = T$$(T$(cid), 'a')[T$(hid).value / config.step - 1];
+        };
+        lis[i].onmouseout = function () {
+          curA && (curA.className += config.curcss);
+        };
+        lis[i].onmouseover = function () {
+          curA && (curA.className = curA.className.replace(config.curcss, ''));
+        }
+      }
+    };
+    return {Stars: Stars}
+  }().Stars('stars2', 'stars2-tips', 'stars2-input', {
+    'info': ['文献很差', '文献不咋地', '文献一般吧', '文献不错', '文献极好啊'],
+    'curcss': ' current-rating',
+    'step': 2
+  });
+
+</script>
+
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container">
+            <p>文献推荐成功</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="onBack()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

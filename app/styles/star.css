@@ -1,0 +1,17 @@
+.stars,.stars li{
+    margin:0px;
+    padding:0px;
+    list-style:none;
+}
+.stars li{
+    float:left;
+    width:20px;
+    height:20px;
+    background-size:cover;
+}
+.star_on{
+    background:url(../images/star-on-big.png)
+}
+.star_off{
+    background:url(../images/star-off-big.png)
+}

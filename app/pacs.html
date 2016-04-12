@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html  ng-app="pacsApp">
+<head>
+	<meta charset="utf-8">
+
+	<title></title>
+
+    <link type="text/css" href="libs/zui/css/zui.css" rel="stylesheet">
+    <link type="text/css" href="styles/pacs.css" rel="stylesheet">
+
+	<script type="text/javascript" src="libs/jquery/jquery.js"></script>
+
+	<script type="text/javascript" src="libs/angular/angular.js"></script>
+	<script type="text/javascript" src="libs/angular-route/angular-route.min.js"></script>
+	<script type="text/javascript" src="libs/angular-resource/angular-resource.min.js"></script>
+	<script type="text/javascript" src="libs/angular-sanitize/angular-sanitize.min.js"></script>
+	<script type="text/javascript" src="libs/zui/js/zui.js"></script>
+	<script type="text/javascript" src="libs/unicos/function.js"></script>
+
+	<script type="text/javascript" src="scripts/services/svcCommon.js"></script>
+	<script type="text/javascript" src="scripts/services/svcDict.js"></script>
+	<script type="text/javascript" src="scripts/directives/drtCommon.js"></script>
+
+	<script type="text/javascript" src="scripts/pacs/pacs.js"></script>
+
+<!--
+	<script type="text/javascript" src="scripts/pacs/pacs.all.min.js"></script>
+-->
+
+	<script type="text/javascript" src="scripts/pacs/src20160227/utils.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/view.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/image.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/series.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/tool.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/dwobj.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/lut.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/filter.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/cache.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/mpr.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/glrc.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/ctxWraper.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/imageData.js"></script>
+	<script type="text/javascript" src="scripts/pacs/src20160227/imagePlayer.js"></script>
+
+	<script type="text/javascript" src="scripts/pacs/cornerstone/jpx.min.js"></script>
+	<script type="text/javascript" src="scripts/pacs/cornerstone/cornerstone.min.js"></script>
+	<script type="text/javascript" src="scripts/pacs/cornerstone/cornerstoneWADOImageLoader.min.js"></script>
+	<script type="text/javascript" src="scripts/pacs/cornerstone/cornerstoneWebImageLoader.min.js"></script>
+	<script type="text/javascript" src="scripts/pacs/cornerstone/dicomParser.min.js"></script>
+
+	<script type="text/javascript" src="scripts/pacs/three/math.all.min.js"></script>
+
+</head>
+<body oncontextmenu="return false">
+
+<script id="fragmentShaderFirstPass" type="x-shader/x-fragment">
+	varying vec3 worldSpaceCoords;
+
+	void main()
+	{
+		//The fragment's world space coordinates as fragment output.
+		gl_FragColor = vec4( worldSpaceCoords.x , worldSpaceCoords.y, worldSpaceCoords.z, 1 );
+	}
+</script>
+<script id="vertexShaderFirstPass" type="x-shader/x-vertex">
+	varying vec3 worldSpaceCoords;
+
+	void main()
+	{
+		//Set the world space coordinates of the back faces vertices as output.
+		worldSpaceCoords = position + vec3(0.5, 0.5, 0.5); //move it from [-0.5;0.5] to [0,1]
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	}
+</script>
+<script id="fragmentShaderSecondPass" type="x-shader/x-fragment">
+
+			varying vec3 worldSpaceCoords;
+			varying vec4 projectedCoords;
+			uniform sampler2D tex, cubeTex, transferTex;
+			uniform float steps0;
+			uniform float temp;
+			uniform float alphaCorrection0;
+			const int MAX_STEPS = 1024;
+			float steps = 1024.0;
+			float alphaCorrection;
+
+			//Acts like a texture3D using Z slices and trilinear filtering.
+			vec4 sampleAs3DTexture( vec3 texCoord )
+			{
+				vec4 colorSlice1, colorSlice2;
+				vec2 texCoordSlice1, texCoordSlice2;
+
+				//The z coordinate determines which Z slice we have to look for.
+				//Z slice number goes from 0 to 255.
+				//float zSliceNumber1 = floor((texCoord.z - 0.25)  * 255.0 * 2.0);
+				float zSliceNumber1 = floor(texCoord.z * 255.0);
+
+				//As we use trilinear we go the next Z slice.
+				float zSliceNumber2 = min( zSliceNumber1 + 1.0, 255.0); //Clamp to 255
+
+				//The Z slices are stored in a matrix of 16x16 of Z slices.
+				//The original UV coordinates have to be rescaled by the tile numbers in each row and column.
+
+				//texCoord.x = floor(texCoord.x * 511.0) / 511.0;
+				//texCoord.y = floor(texCoord.y * 511.0) / 511.0;
+
+				texCoord.xy /= 16.0;
+
+				texCoordSlice1 = texCoordSlice2 = texCoord.xy;
+
+				//Add an offset to the original UV coordinates depending on the row and column number.
+				texCoordSlice1.x += (mod(zSliceNumber1, 16.0 ) / 16.0);
+				texCoordSlice1.y += floor((255.0 - zSliceNumber1) / 16.0) / 16.0;
+
+				texCoordSlice2.x += (mod(zSliceNumber2, 16.0 ) / 16.0);
+				texCoordSlice2.y += floor((255.0 - zSliceNumber2) / 16.0) / 16.0;
+
+				//Get the opacity value from the 2D texture.
+				//Bilinear filtering is done at each texture2D by default.
+				colorSlice1 = texture2D( cubeTex, texCoordSlice1 );
+				colorSlice2 = texture2D( cubeTex, texCoordSlice2 );
+
+				//vec4 tmp = texture2D(transferTex, vec2(1.0 / 16.0 * 4.5, 1.0 / 16.0 * 1.9));
+				//tmp = vec4(tmp.a, tmp.a, tmp.a, 1);
+				//return tmp;
+
+				//if (colorSlice1.a > 0.0) {
+				//	if (colorSlice1.a < 1.0) {
+				//		return vec4(colorSlice1.a, colorSlice1.a, colorSlice1.a, 1.0);
+				//	}
+				//	colorSlice1.a = 1.0;
+				//}
+				//if (colorSlice2.a > 0.0) {
+				//	if (colorSlice2.a < 1.0) {
+				//		//return vec4(colorSlice1.a, colorSlice1.a, colorSlice1.a, 1.0);
+				//	}
+				//	colorSlice2.a = 1.0;
+				//}
+
+				//Based on the opacity obtained earlier, get the RGB color in the transfer function texture.
+				//colorSlice1.rgb = texture2D( transferTex, vec2( colorSlice1.a, 1.0) ).rgb;
+				//colorSlice2.rgb = texture2D( transferTex, vec2( colorSlice2.a, 1.0) ).rgb;
+
+				colorSlice1 = texture2D( transferTex, vec2( colorSlice1.a, 1.0) );
+				colorSlice2 = texture2D( transferTex, vec2( colorSlice2.a, 1.0) );
+
+				//How distant is zSlice1 to ZSlice2. Used to interpolate between one Z slice and the other.
+				//float zDifference = mod(texCoord.z * 255.0, 1.0);
+
+				//if (colorSlice1.a > 0.0) {
+				//	colorSlice1 = vec4(1.0, 1.0, 1.0, 1.0);
+				//}
+				//if (colorSlice2.a > 0.0) {
+				//	colorSlice2 = vec4(1.0, 1.0, 1.0, 1.0);
+				//}
+
+				float zDifference;
+				float alphas = colorSlice1.a + colorSlice2.a;
+
+				if (alphas > 0.0) {
+					zDifference = colorSlice2.a / alphas;
+				} else {
+					return vec4(0.0);
+				}
+
+				//Finally interpolate between the two intermediate colors of each Z slice.
+				//return mix(colorSlice1, colorSlice2, zDifference) ;
+
+				//vec4 result = colorSlice1 * (1.0 - zDifference) + colorSlice2 * zDifference;
+				vec4 result = mix(colorSlice1, colorSlice2, zDifference);
+				result.a = colorSlice1.a + colorSlice2.a;
+
+				return result;
+			}
+
+
+			void main( void ) {
+
+				//Transform the coordinates it from [-1;1] to [0;1]
+				vec2 texc = vec2(((projectedCoords.x / projectedCoords.w) + 1.0 ) / 2.0,
+								((projectedCoords.y / projectedCoords.w) + 1.0 ) / 2.0 );
+
+				//The back position is the world space position stored in the texture.
+				vec3 backPos = texture2D(tex, texc).xyz;
+
+				//The front position is the world space position of the second render pass.
+				vec3 frontPos = worldSpaceCoords;
+
+				//The direction from the front position to back position.
+				vec3 dir = backPos - frontPos;
+
+				float rayLength = length(dir);
+
+				//Calculate how long to increment in each step.
+				float delta = 1.0 / steps;
+
+				//The increment in each direction for each step.
+				vec3 deltaDirection = normalize(dir) * delta;
+				float deltaDirectionLength = length(deltaDirection);
+
+				//Start the ray casting from the front position.
+				vec3 currentPosition = frontPos;
+
+				//The color accumulator.
+				vec4 accumulatedColor = vec4(0.0);
+
+				//The alpha value accumulated so far.
+				float accumulatedAlpha = 0.0;
+
+				//How long has the ray travelled so far.
+				float accumulatedLength = 0.0;
+
+				vec4 colorSample;
+				float alphaSample;
+
+				//Perform the ray marching iterations
+				for(int i = 0; i < MAX_STEPS; i++)
+				{
+					if (currentPosition.z < 0.25 || currentPosition.z > 0.75
+						|| currentPosition.x < 0.0 || currentPosition.x > 1.0
+						|| currentPosition.y < 0.0 || currentPosition.y > 1.0) {
+						currentPosition += deltaDirection;
+						accumulatedLength += deltaDirectionLength;
+						continue;
+					}
+
+					//Get the voxel intensity value from the 3D texture.
+					colorSample = sampleAs3DTexture( currentPosition );
+
+					//colorSample = vec4(1.0);
+
+					//Allow the alpha correction customization
+					alphaSample = colorSample.a;
+
+					//Perform the composition.
+					accumulatedColor += (1.0 - accumulatedAlpha) * colorSample * alphaSample;
+
+					//Store the alpha accumulated so far.
+					accumulatedAlpha += alphaSample;
+
+					//Advance the ray.
+					currentPosition += deltaDirection;
+					accumulatedLength += deltaDirectionLength;
+
+					//If the length traversed is more than the ray length, or if the alpha accumulated reaches 1.0 then exit.
+					if(accumulatedLength >= rayLength || accumulatedAlpha >= 1.0 )
+						break;
+				}
+
+				gl_FragColor  = accumulatedColor;
+			}
+</script>
+
+<script id="vertexShaderSecondPass" type="x-shader/x-vertex">
+	varying vec3 worldSpaceCoords;
+	varying vec4 projectedCoords;
+
+	void main()
+	{
+		worldSpaceCoords = (modelMatrix * vec4(position + vec3(0.5, 0.5,0.5), 1.0 )).xyz;
+		gl_Position = projectionMatrix *  modelViewMatrix * vec4( position, 1.0 );
+		projectedCoords =  projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	}
+</script>
+
+<div ng-controller="pacsCtrl" class="main-view">
+
+<div class="mheader">
+	 <!-- Collect the nav links, forms, and other content for toggling -->
+	<div class="collapse navbar-collapse navbar-collapse-example header">
+
+	  <div> <a class="viewer-title">极感科技PACS云影像 &nbsp;</a> </div>
+
+	  <ul class="nav navbar-nav">
+
+	    <li class="dropdown"  id="dm-layout">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-th-large"></i> 布局<b class="caret"></b></a>
+	      <ul class="dropdown-menu" role="menu">
+	        <li><a href="#" ng-click="onLayoutxXx(11, $event)">1X1</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(12, $event)">1X2</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(13, $event)">1X3</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(14, $event)">1X4</a></li>
+	        <li class="divider"></li>
+	        <li><a href="#" ng-click="onLayoutxXx(21, $event)">2X1</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(22, $event)">2X2</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(23, $event)">2X3</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(24, $event)">2X4</a></li>
+	        <li class="divider"></li>
+	        <li><a href="#" ng-click="onLayoutxXx(32, $event)">3X2</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(33, $event)">3X3</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(34, $event)">3X4</a></li>
+	        <li class="divider"></li>
+	        <li><a href="#" ng-click="onLayoutxXx(42, $event)">4X2</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(43, $event)">4X3</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(44, $event)">4X4</a></li>
+	        <li class="divider"></li>
+	        <li><a href="#" ng-click="onLayoutxXx(301, $event)">301</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(302, $event)">302</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(303, $event)">303</a></li>
+	        <li><a href="#" ng-click="onLayoutxXx(304, $event)">304</a></li>
+	      </ul>
+	    </li>
+
+	    <li class="dropdown">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-adjust"></i> 窗位<b class="caret"></b></a>
+	      <ul class="dropdown-menu" role="menu">
+	        <li><a href="#" ng-click="onSetWl(undefind, undefind, $event)">默认</a></li>
+	        <li><a href="#" ng-click="onSetWl(110, 35, $event)">大脑</a></li>
+	        <li><a href="#" ng-click="onSetWl(320, 50, $event)">腹腔</a></li>
+	        <li><a href="#" ng-click="onSetWl(400, 80, $event)">纵隔膜?</a></li>
+	        <li><a href="#" ng-click="onSetWl(2000, 350, $event)">骨骼</a></li>
+	        <li><a href="#" ng-click="onSetWl(1500, -500, $event)">肺</a></li>
+	        <li><a href="#" ng-click="onSetWl(380, 120, $event)">MIP</a></li>
+	        <li><a href="#" ng-click="onSetWl2(-800, 3000, $event)">VR Default</a></li>
+	        <li><a href="#" ng-click="onSetWl(243, 526, $event)">VR Bones</a></li>
+	        <li><a href="#" ng-click="onSetWl2(-600, 180, $event)">VR Soft Tissue</a></li>
+	      </ul>
+	    </li>
+
+	    <li class="dropdown">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-dashboard"></i> 伪彩<b class="caret"></b></a>
+	      <ul class="dropdown-menu" role="menu">
+	        <li><a href="#" ng-click="onSetLut(null, $event)">None</a></li>
+			<li ng-repeat="item in luts track by $index">
+				<a href="#" ng-click="onSetLut(item, $event)">{{item.name}}</a>
+			</li>
+
+	      </ul>
+	    </li>
+
+	    <li class="dropdown">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-random"></i> 滤波<b class="caret"></b></a>
+	      <ul class="dropdown-menu" role="menu">
+	        <li><a href="#" ng-click="onSetFilter(null, $event)">None</a></li>
+			<li ng-repeat="item in filters track by $index">
+				<a href="#" ng-click="onSetFilter(item, $event)">{{item.name}}</a>
+			</li>
+
+	      </ul>
+	    </li>
+
+	    <li class="dropdown">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-circle"></i> 重置<b class="caret"></b></a>
+	      <ul class="dropdown-menu" role="menu">
+	        <li><a href="#" ng-click="onReset(51, $event)">重置所有</a></li>
+	        <li><a href="#" ng-click="onReset(52, $event)">实际大小</a></li>
+	        <li><a href="#" ng-click="onReset(53, $event)">自动大小</a></li>
+	        <li><a href="#" ng-click="onReset(54, $event)">窗位</a></li>
+	        <li><a href="#" ng-click="onReset(55, $event)">伪彩色</a></li>
+	        <li><a href="#" ng-click="onReset(56, $event)">滤波</a></li>
+	        <li><a href="#" ng-click="onReset(57, $event)">测量/标记</a></li>
+	        <li><a href="#" ng-click="onReset(58, $event)">翻转</a></li>
+	        <li><a href="#" ng-click="onReset(59, $event)">MPR</a></li>
+	      </ul>
+	    </li>
+
+	    <li class="dropdown">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-info"></i> 系统 <b class="caret"></b></a>
+	      <ul class="dropdown-menu" role="menu">
+	        <li><a href="#" ng-click="onAbout($event)">关于</a></li>
+	        <li><a href="#" ng-click="onTest($event)">测试</a></li>
+	        <li><a href="#" ng-click="onExit($event)">退出</a></li>
+	      </ul>
+	    </li>
+
+	    <!--
+	    <li class="" id="li-vr">
+	    	<a href="#" ng-click="onVR($event)"><i class="icon-pencil"></i> VR</a>
+	    </li>
+	    -->
+	  </ul>
+
+	<div class="play-wraper">
+		<div class="tbtn" data-toggle="tool-item" title="前一张" ng-click="onPrevImage($event)"> <div class="x-img ticon ticon-prev"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="播放图片" ng-click="onPlayImage($event)" id="playBtn"> <div class="x-img ticon ticon-play"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="下一张" ng-click="onNextImage($event)"> <div class="x-img ticon ticon-next"></div></div>
+		<select class="form-control fps-sel" id="selfps" value="10">
+              <option value="1">每秒1帧</option>
+              <option value="2">每秒2帧</option>
+              <option value="5">每秒5帧</option>
+              <option value="10">每秒10帧</option>
+              <option value="20">每秒20帧</option>
+              <option value="30">每秒30帧</option>
+              <option value="40">每秒40帧</option>
+              <option value="50">每秒50帧</option>
+              <option value="100">每秒100帧</option>
+        </select>
+
+	</div>
+	</div><!-- /.navbar-collapse -->
+</div>
+
+<div class="wrapper" data-ng-init="initView()">
+
+	<!-- tool menu -->
+	<div id="toolWraper">
+	<div id="toolInnerWrapper">
+
+	  <div class="tool-label row">操作</div>
+	  <div class="row btn-wraper action-toolbar">
+		<div class="tbtn" data-toggle="tool-item" title="选择" ng-click="onAction(0, $event)" id="btnSelect"><div class="x-img ticon ticon-pointer"></div></div>
+		<div class="tbtn active" data-toggle="tool-item" title="滚动" ng-click="onAction(1, $event)"><div class="x-img ticon ticon-series"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="缩放" ng-click="onAction(2, $event)"><div class="x-img ticon ticon-zoom"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="移动" ng-click="onAction(3, $event)"><div class="x-img ticon ticon-move"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="WL调窗" ng-click="onAction(4, $event)"><div class="x-img ticon ticon-wl"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="CT值测量" ng-click="onAction(5, $event)"><div class="x-img ticon ticon-ct"></div></div>
+      </div>
+
+      <!--
+	  <div class="tool-label row">选择</div>
+	  <div class="row btn-wraper">
+		<div class="tbtn" data-toggle="tool-item" title="矩形" ng-click="onSelect(21, $event)"><div class="x-img ticon ticon-rect"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="椭圆" ng-click="onSelect(22, $event)"><div class="x-img ticon ticon-ellipse"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="多边形" ng-click="onSelect(23, $event)"><div class="x-img ticon ticon-polyon"></div></div>
+      </div>
+      -->
+
+	  <div class="tool-label row">测量</div>
+	  <div class="row btn-wraper">
+		<div class="tbtn" data-toggle="tool-item" title="长度测量" ng-click="onMeter(11, $event)"><div class="x-img ticon ticon-meter-line"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="角度测量" ng-click="onMeter(12, $event)"><div class="x-img ticon ticon-meter-angle"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="Cobb角度测量" ng-click="onMeter(13, $event)"><div class="x-img ticon ticon-meter-angle2"></div></div>
+      </div>
+
+	  <div class="tool-label row">标记</div>
+	  <div class="row btn-wraper">
+		<div class="tbtn" data-toggle="tool-item" title="铅笔" ng-click="onMark(36, $event)"> <div class="x-img ticon ticon-pencil"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="剪头" ng-click="onMark(31, $event)"> <div class="x-img ticon ticon-arrow"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="矩形" ng-click="onMark(34, $event)"> <div class="x-img ticon ticon-rect"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="椭圆" ng-click="onMark(33, $event)"> <div class="x-img ticon ticon-ellipse"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="多边形" ng-click="onMark(35, $event)"> <div class="x-img ticon ticon-polyon"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="文本" ng-click="onMark(32, $event)"> <div class="x-img ticon ticon-text"></div></div>
+       </div>
+
+	  <div class="tool-label row">显示</div>
+	  <div class="row btn-wraper">
+		<div class="tbtn" data-toggle="tool-item" title="水平" ng-click="onRotate(41, $event)"> <div class="x-img ticon ticon-flipx"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="垂直" ng-click="onRotate(42, $event)"> <div class="x-img ticon ticon-flipy"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="逆时针90" ng-click="onRotate(44, $event)"> <div class="x-img ticon ticon-ccw"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="顺时针90" ng-click="onRotate(43, $event)"> <div class="x-img ticon ticon-cw"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="反显" ng-click="onInvert($event)"> <div class="x-img ticon ticon-inv"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="多维平面重建(MPR)" ng-click="onMPR($event)"> <div class="x-img ticon ticon-mpr"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="联动" ng-click="onLink($event)" id="btn-link"> <div class="x-img ticon ticon-link"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="定位线" ng-click="onLop($event)" id="btn-lop"> <div class="x-img ticon ticon-lop"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="显示隐藏标尺" ng-click="onShowRuler($event)"> <div class="x-img ticon ticon-show-ruler"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="显示隐藏图像信息" ng-click="onShowCTInfo($event)"> <div class="x-img ticon ticon-show-info"></div></div>
+		<div class="tbtn" data-toggle="tool-item" title="重置" ng-click="onReset(51, $event)"> <div class="x-img ticon ticon-reset"></div></div>
+      </div>
+
+	</div>
+	</div>
+
+	<!-- series menu -->
+	<div id="seriesWrapper" data-ng-init="loadSeries()">
+	  <div class="tool-label row">序列</div>
+		<div ng-repeat="item in series track by $index" class="series-item" id="series-{{item.index}}"
+			data-toggle="series-item" title="{{item.SeriesDescription}}"
+			ng-dblclick="onDblClickSeries(item, $event)">
+			<canvas class="series-canvas" id="series-canvas-{{item.index}}"></canvas>
+			<!-- {{item.SeriesDescription}} &nbsp; -->
+			<div class="series-info"><a ng-show="item.images" class="series-info2">{{item.SeriesNumber}}/{{item.loadIdx}}</a></div>
+		</div>
+	</div>
+
+	<!-- image area -->
+	<div class="content-wrapper" id="imageWrapper">
+		<div ng-repeat="item in pacsViews track by $index" class="d_item" id="pv-{{$index}}">
+			<canvas id="pv-{{$index}}-c" > </canvas>
+			<div class="image-info-lt image-info">
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+			</div>
+			<div class="image-info-rt image-info">
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+			</div>
+			<div class="image-info-lb image-info">
+				<a style="color:#F00;"></a><br/>
+				<a></a><br/>
+	 			<input type="range" id="trackBar" min="1" max="10" step="1" value="1" style="visibility:hidden;" /><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+			</div>
+			<div class="image-info-rb image-info">
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+				<a></a><br/>
+			</div>
+		<div>
+
+		<div id="infoMsg">
+		处理中
+		</div>
+	</div>
+
+</div>
+
+</div>
+
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+	});
+</script>
+
+</html>

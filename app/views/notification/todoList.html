@@ -1,0 +1,53 @@
+
+<div class="container mt50">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered" data-ng-init="getKnow($event)">
+      <div class="alert with-icon "> <span class="mp7">研究进展： </span> <span class="col-md-3">
+        <input type="text" class="form-control" placeholder="请输入发起方/主题/类别"  ng-model="searchMessage" ng-keypress="onSearchKey($event)">
+        </span> <span class="ml10">
+        <button class="button button-glow button-rounded button-raised button-primary" ng-click="doSearch()"><i class="icon-search"></i> 查询</button>&nbsp;&nbsp;
+        <!--<button class="button button-glow button-rounded button-raised button-primary" ng-click="loadAllData()"><i class="icon-refresh"></i> 刷新</button>-->
+      </div>
+        <div class="panel " >
+          <div class="panel-heading "><i class="icon-map-marker gre"> </i>研究进展</div>
+          <div class="panel-body">
+            <div class="row table_row">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>发起人</th>
+                  <th>发起实验室</th>                  
+                  <th>发起主题</th>
+                  <th>进展</th>
+                  <th>创建日期</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="item in todos track by $index" ng-click="onClickRow(item)" id="notify_item_{{$index}}" ng-dblclick="onDbClickNotify(item)">
+                  <td>{{item[2]}}</td>
+                  <td>{{item[1]}}</td>
+                  <td>{{item[5]}}</td>
+                  <td>{{item[4]}}</td>
+                  <td>{{item[3]}}</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="row text-center">
+              <ul class="pager" id="notifyPager">
+                <li class="previous" ><a href="" id="first" ng-click="page($event)">首页</a></li>
+                <li class="previous" ><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                <li ><a href="" id="beforeSL">...</a></li>
+                <li ng-repeat="pageNumber in pager.pageNumbers"><a href="" class="" id="{{pageNumber}}" ng-click="page($event)">{{pageNumber}}</a></li>
+                <li ><a href="" id="afterSL">...</a></li>
+                <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+                <li class="fresh"><a href="" ng-click="loadData()"><i class="icon-refresh"></i></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+

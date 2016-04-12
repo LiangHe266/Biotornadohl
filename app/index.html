@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html ng-app="firstApp" xmlns:wb="http://open.weibo.com/wb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="renderer" content="webkit">
+  <title></title>
+  <link rel="stylesheet" href="styles/buttons.css">
+  <link href="sytles/font-awesome.min.css" rel="stylesheet">
+  <link href="libs/zui/css/zui.min.css" rel="stylesheet">
+  <link href="libs/zui/lib/datatable/zui.datatable.min.js" rel="stylesheet">
+  <link href="styles/index.css" rel="stylesheet">
+  <!--<link  type="text/css" href="styles/sidebar.css" rel="stylesheet">-->
+  <link href="libs/datetimepicker/datetimepicker.css" rel="stylesheet">
+  <link href="libs/angular-tree/css/tree-control.css" rel="stylesheet">
+  <link href="libs/angular-tree/css/tree-control-attribute.css" rel="stylesheet">
+  <link rel="stylesheet" href="libs/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+  <link rel="stylesheet" type="text/css" href="libs/Html5Video/css/video.css" media="all">
+  <!--<style>
+    .logout-click{
+      color:#FD4813;
+      cursor: pointer;
+    }
+    .nav-parent{
+      background-color:#6495ED;
+    }
+    .nav-parent>a{
+      color: white;
+    }
+    .red_star{
+      color:red;
+    }
+  </style>-->
+</head>
+<body>
+<!--头部开始-->    <!--   系统目录下的小图标直接在html上改  例如：  i class="icon-pencil "是一个铅笔图标   -->
+
+<!--
+    说明：
+          1  该页为系统始终显示的头部信息界面。意思就是打开系统的任何一个界面，这个页面都是加载了的。通过这个界面链接的CSS，JS等文件都是加载了的。通过修改下面的链接，链接到不同的页面。例如：<li><a  href="#/search" ><i class="icon-pencil "></i> 系统目录1.1</a> </li>链接到了"#/search"对应的界面。这里如果直接写XX.html会链接到新网页，我们这里是通过修改script目录下的app.js文件，让search对应到相应的界面。
+          2  系统目录下的小图标直接在html上改  例如：  i class="icon-pencil "是一个铅笔图标。
+          3   。。。
+
+-->
+
+    <!-- <img src="images/logo.png" style="width: 66px;margin-left: 5%;margin-top:-6px"> -->
+    <div ng-controller="hdrCtrl">
+    <span class="top-height color_green" style="margin-left:20px; color:#FFFF00; font-size:18px; width:28%">生命科学服务云平台</span>
+    <div class="top-height mr20 flright">
+      <span class="userInfo hide"><a style="color:#FFFF00; font-size:22px" >欢迎 {{user.hospital_name}}&nbsp;{{user.name}}</a></span>&nbsp;&nbsp;
+      <span class="logout"><a class="logout-click" onclick="$('#logout').modal('show');">退出系统</a></span>
+    </div>
+  </div>
+</div>
+  <div class="modal" id="logout" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+    <div class="modal-dialog" style="width:30%">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i>提示</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal" role="form" method='post'>
+            <div class="container">
+              <p>您确定要退出当前系统吗</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="onLogout()">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="index_msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+    <div class="modal-dialog" style="width:30%">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;<button></button>
+          </button>
+          <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal" role="form" method='post'>
+            <div class="container">
+              <p>{{msg}}</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">确定
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt20">
+  <div class="row">
+    <div class="col-md-2" id='left_menus_div' ng-controller="lmenuCtrl"></div>
+    <div class="col-md-10" ng-view style="margin-top: -70px;"></div>
+  </div>
+</div>
+
+<script src="libs/cryptojslib/rollups/md5.js"></script>
+<script src="libs/cryptojslib/rollups/aes.js"></script>
+<script type="text/javascript" src="libs/zui/lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="libs/jquery/jquery.media.js"></script>
+<script type="text/javascript" src="libs/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" src="libs/zTree_v3/js/jquery.ztree.excheck-3.5.js"></script>
+<script type="text/javascript" src="libs/angular/angular.js"></script>
+<script type="text/javascript" src="libs/angular-route/angular-route.min.js"></script>
+<script type="text/javascript" src="libs/angular-resource/angular-resource.min.js"></script>
+<script type="text/javascript" src="libs/angular-sanitize/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="libs/angular-tree/angular-tree-control.js"></script>
+<script type="text/javascript" src="libs/angular-file-upload/angular-file-upload.js"></script>
+<script type="text/javascript" src="libs/zui/js/zui.min.js"></script>
+<script type="text/javascript" src="libs/zui/lib/datatable/zui.datatable.min.js"></script>
+<script type="text/javascript" src="libs/datetimepicker/datetimepicker.js" charset="utf-8"></script>
+<script type="text/javascript" src="libs/prettify.js"></script>
+<script type="text/javascript" src="libs/jctlibs/function.js"></script>
+<script src="scripts/app.js"></script>
+<script type="text/javascript" src="scripts/services/svcCommon.js"></script>
+<script type="text/javascript" src="scripts/directives/drtCommon.js"></script>
+<script type="text/javascript" src="scripts/services/svcUEditor.js"></script>
+<script type="text/javascript" src="scripts/services/svcDict.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrMenusManage.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrEditMenu.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrEditMenuItem.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrMenusAutGroupManage.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrMenusAutUser.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrMenusAutUserGroup.js"></script>
+<script type="text/javascript" src="scripts/controllers/ctrIndex.js"></script>
+<script type="text/javascript" src="scripts/controllers/menu/ctrfile.js"></script>
+<script type="text/javascript" src="scripts/controllers/operation_log/ctrOperationLog.js"></script>
+<script type="text/javascript" src="scripts/controllers/account_manage/ctrAccountManage.js"></script>
+<script type="text/javascript" src="scripts/controllers/account_manage/ctrAddAccount.js"></script>
+<script type="text/javascript" src="scripts/controllers/account_manage/ctrUpdateAccount.js"></script>
+<script type="text/javascript" src="scripts/controllers/account_manage/ctrUpdateAccountpassword.js"></script>
+<script type="text/javascript" src="scripts/controllers/notification/ctrNotify.js"></script>
+<script type="text/javascript" src="scripts/controllers/medcase/medcase.js"></script>
+<script type="text/javascript" charset="utf-8" src="libs/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="libs/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="scripts/controllers/tm/list.js"></script>
+<script type="text/javascript" src="scripts/controllers/tm/new.js"></script>
+<script type="text/javascript" src="scripts/controllers/graphics/ctrGen.js"></script>
+<script type="text/javascript" src="scripts/controllers/graphics/ctrRna.js"></script>
+<script type="text/javascript" src="scripts/controllers/data_mining/ctrNewmodel.js"></script>
+<script type="text/javascript" src="scripts/controllers/data_mining/ctrUsemodel.js"></script>
+<script type="text/javascript" src="scripts/controllers/patient_account/patientInfoCtrl.js"></script>
+<script type="text/javascript" src="scripts/controllers/BLAST/ctrblast.js"></script>
+<script type="text/javascript" src="scripts/controllers/Main_ac_manage/ctrUpdatePassword.js"></script>
+<script type="text/javascript" src="scripts/controllers/Main_ac_manage/ctrMainAcManage.js"></script>
+<script type="text/javascript" src="scripts/controllers/sequence/list.js"></script>
+<script type="text/javascript" src="scripts/controllers/sequence/detail.js"></script>
+<script type="text/javascript" src="libs/Html5Video/js/jquery.plugin.js"></script>
+<script type="text/javascript" src="libs/Html5Video/js/jquery.video.js"></script>
+</body>
+</html>
+<div id="returntop"><a class="gre" href=""><i class="icon-2x icon-chevron-up"></i></a></div>
+
+<script type="text/javascript">
+
+  <!--回顶部-->
+  $(document).ready(function () {
+    $("#returntop").click(function () {
+      if (scroll == "off") return;
+      $("html,body").animate({scrollTop: 0}, 600);
+    });
+  });
+  var exitsystem = function () {
+    sessionStorage.removeItem("strUser");
+    sessionStorage.removeItem("authToken");
+    window.location.href = "/login.html"
+  };
+
+  var gotoLogin = function (status) {
+    if (status == 401) {
+      window.location.href = "/login.html"
+    }
+  }
+</script>

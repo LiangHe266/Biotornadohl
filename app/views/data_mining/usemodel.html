@@ -1,0 +1,159 @@
+﻿﻿
+<div class="container mt50">
+<div class="row mt2">
+
+        <div class="tab-content tab-bordered">
+                <div class="alert with-icon ">
+                        <span class="mp7" >选择模型类型：</span><span class="col-md-3"><select class="form-control gre" ng-model="proId" style="height:32px" data-ng-init="getProvinces()" ng-options="item.id as item.name for item in provinces" ng-change="getCountry()"><option value="" selected="selected">--选择一个模型类型--</option></select></span>
+                        <span class="mp7" >选择模型：</span><span class="col-md-3"><select class="form-control gre" ng-model="couId" style="height:32px" data-ng-init="getCountry()" ng-options="item.id as item.name for item in country" ng-change="showmodel()"><option value="" selected="selected">--选择一个模型--</option></select></span>
+                        <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="showSeq(searchMessage)"><i class="icon-search"></i>显示模型信息</button> </span>			
+                        <span class=""><a href="#/newmodel"  class="button button-glow button-rounded button-raised button-primary" title="创建新模型">创建新模型</i></a></span>
+                         <div class="tab-panel">
+                        <div class="panel mt2">
+                                <div class="panel-heading "> <i class="icon-map-marker gre"> </i>模型信息</div>
+                                <div class="panel-body">
+                                        <table data-ng-init="loadPatients()" class="table datatable table-bordered table-hover" >
+                                                <thead>
+                                                <tr>
+                                               <td></td><td ></td>
+                                                </tr>
+                                        
+                                                </thead>
+                                                <tbody>
+                                                <tr	ng-app="patients" ng-dblclick="onEdit(patients)">
+                                                        
+                                                        <td style="color:#0000CD">名称：</td><tr></tr><td>{{patients[0][2]}}</td>
+                                                        
+                                        
+                                                </tr>
+                                                <tr	ng-app="patients" ng-dblclick="onEdit(patients)">
+                                                        
+                                                        <td style="color:#0000CD">说明：</td><tr></tr><td >{{patients[0][3]}}</td>
+                                        
+                                               
+                                                        
+                                                </tr>
+                                                <tr	ng-app="patients" ng-dblclick="onEdit(patients)">
+                                                        
+                                                        <td style="color:#0000CD">参数：</td><tr></tr><td >{{patients[0][4]}}</td>
+
+                                            
+                                                        </tr>
+                                                <tr	ng-app="patients" ng-dblclick="onEdit(patients)">
+                                                        
+                                                        <td style="color:#0000CD">创建人：</td><tr></tr><td >{{patients[0][0]}}</td>
+
+                                                        
+                                                        
+                                                        </tbody>
+                                        </table>
+                        
+                        
+                        <span class="mp7"> 输入计算数据：</span> <span class="col-md-3"><input type="text" class="form-control" placeholder="请输入计算数据"	ng-model="searchMessage"  ng-keypress="onSearchKey($event)" >
+                        <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="countdata(searchMessage)"><i class="icon-search"></i>计算</button> </span>
+                       
+                        
+                        <!--<span class="ml10" ng-show="admin"> <a ng-click="onAdd()" class="button button-glow button-rounded button-raised button-primary"><i class="icon-plus"></i> 新增</a> </span>-->
+                </div>
+                <div class="tab-panel">
+                        <div class="panel mt2">
+                                <div class="panel-heading "> <i class="icon-map-marker gre"> </i>数据结果</div>
+                                <div class="panel-body">
+                                        <table data-ng-init="loadPatients()" class="table datatable table-bordered table-hover" >
+                                                <thead>
+                                                <tr>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr	ng-app="resultt" ng-dblclick="onEdit(result)">
+                                                        <td>结果:</td><td >{{resultt}}</td>
+                                                       
+                                                </tr>
+                                                 <tr	ng-app="resulty" ng-dblclick="onEdit(result)">
+                                                        <td>可信度:</td><td >{{resulty}}</td>
+                                                       
+                                                </tr>
+                                                        
+                                                        </tbody>
+                                        </table>
+                                        <div class="row text-center">
+                                                <ul class="pager">
+                                                        <li class="previous" ><a href="" id="first" ng-click="page($event)">首页</a></li>
+                                                        <li class="previous" ><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                                                        <li ><a href="" id="beforeSL">...</a></li>
+                                                        <li ng-repeat="pageNumber in pageNumbers"><a href="" class="" id="{{pageNumber}}" ng-click="page($event)">{{pageNumber}}</a></li>
+                                                        <li ><a href="" id="afterSL">...</a></li>
+                                                        <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                                                        <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+                                                </ul>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+
+
+
+
+<!--删除患者信息提示框-->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>亲,您确定要删除当前选中内容吗</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" ng-click="deletePerson(personMessage)" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--删除操作结果提示-->
+<div class="modal fade" id="delResult" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+    <div class="modal-dialog" style="width:30%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method='post'>
+                    <div class="container" >
+                        <p>{{tishiMessage}}</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(function(){
+
+        $("#del").modal({
+            //设置点击背景遮罩不关闭弹框
+            backdrop : 'static' ,
+            //默认不显示
+            show     : false
+
+        });
+    })
+
+
+
+</script>

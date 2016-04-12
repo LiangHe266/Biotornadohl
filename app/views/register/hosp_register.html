@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title></title>
+    <link href="../../styles/bootstrap3.0.min.css" type="text/css" rel="stylesheet" />
+    <!--HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries-->
+    <!--[if lt IE 9]>
+    <script src="http://apps.bdimg.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body style="background-color:#F2F2F2">
+<div style="width: 100%;height:945px;background-color:rgba(0,0,0,0.4);z-index:20;float: left;position: fixed;display: none" id="hint">
+    <div style="display: none;width: 50%;height: 50%;overflow: auto;margin: auto;position: absolute;top: 0; left: 0; bottom: 0; right: 0;background-color: #F2F2F2" align="center">
+        <span style="font-size:36px;line-height:320px"></span>
+        <div><button class="btn btn-success" onclick="goToLogin()">确定</button></div>
+    </div>
+    <div style="display: none;width: 50%;height: 50%;overflow: auto;margin: auto;position: absolute;top: 0; left: 0; bottom: 0; right: 0;background-color: #F2F2F2" align="center">
+        <span style="font-size:36px;line-height:320px" class="text-warning">请检查必填项!</span>
+        <div><button class="btn btn-success" onclick="displayEvent()">确定</button></div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <header style="margin-bottom:2%;margin-top:5%" class="row">
+            <!--<div  class="col-md-2" style="margin-top:-30px "><img src="images/logo.png" align="center"></div>-->
+            <h1 class="col-md-12" align="center">欢迎您成为***会员单位</h1>
+        </header>
+        <section>
+            <h4 style="margin-top: 5%">用户基本信息</h4>
+            <table class="table table-bordered table-hover table-striped">
+                <tbody>
+                <tr class="row" style="border: solid 1px #ffffff">
+                    <td class="col-md-6">
+                        <label style="font-size: 14px"> 账 号：</label>
+                        <input type="text" id="username" name="username" placeholder="请输入5-12位以字母开头的字母、数字、下划线组合" onchange="checkuserName()">
+                        <span id="userText" style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">用户姓名：</label>
+                        <input type="text" id="personName" name="username" placeholder="请输入姓名" onblur="checkPersonName()">
+                        <span id="personText" style="font-size: 10px;color: red">* 请输入姓名</span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-md-6">
+                        <label>设置密码：</label>
+                        <input id="password"type="password" placeholder="请输入6-12位字母或数字" onchange="checkpassword()">
+                        <span id="passwordText"style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                    <td class="col-md-6">
+                        <label>确认密码：</label>
+                        <input id="affirmPassword" type="password" placeholder="请输入6-12位字母或数字" onchange="affirmpassword()">
+                        <span id="affirmPasswordText" style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered table-hover table-striped">
+                <thead align="center">
+                <h4 style="margin-top: 5%">学校的基本信息</h4>
+                </thead>
+                <tbody>
+                <tr class="row" style="border: solid 1px #ffffff">
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">学校名字：</label>
+                        <input type="text" placeholder="请输入学校名称 只能是汉字" id="hopName" onblur="checkHosp(event)">
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    </td>
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">学校简称：</label>
+                        <input type="text" id="hopShortName" onchange="linkman(event)">
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                <tr class="row" >
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">学校等级：</label>
+                        <select id="hopGrade" onchange="checkrank(event)">
+                            <option>学校等级</option>
+                        </select>
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">助 &nbsp;记&nbsp; 码：</label>
+                        <input type="text" id="helpNumber" placeholder="学校简称拼音缩写" style="text-transform: uppercase" onblur="mnemonicCode(event)">
+                    </td>
+                </tr>
+                <tr class="row" style="border: solid 1px #ffffff">
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">学校类别：</label>
+                        <select id="hopType" onchange="hoscategory(event)">
+                            <option>学校类别</option>
+                        </select>
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                    <td class="col-md-6">
+                        <label>学校地址：</label>
+                        <select id="hospAddP" onchange="checkPro()">
+                            <option >请选择省份</option>
+                        </select>
+                        <select id="hospAddCi" onchange="checkCity()">
+                            <option>请选择市</option>
+                        </select>
+                        <select id="hospAddCo" onchange="checkCounty()">
+                            <option>请选择县</option>
+                        </select>
+                        <select id="hospAddT" onchange="getTownId()">
+                            <option>请选择乡镇</option>
+                        </select>
+                        <span style="font-size: 10px;color: red" id="addr">* 必填</span>
+                    </td>
+                </tr>
+                <tr class="row" style="border: solid 1px #ffffff">
+                    <td class="col-md-6">
+                        <label>邮政编码：</label>
+                        <span style="font-size: 10px" id="postAddress"></span>
+                    </td>
+                    <td class="col-md-6">
+                        <label>学校负责人：</label>
+                        <input type="text" id="linkman" placeholder="请输入联系人" onchange="linkman(event)">
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">邮箱地址：</label>
+                        <input id="Email" type="text" placeholder="请输入正确的邮箱" onblur="Email()">
+                        <span id="EmailText" style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                    <td class="col-md-6">
+                        <label>联系电话：</label>
+                        <input type="text" placeholder="请输入正确的固话或手机" id="phone" onchange="linkman(event)">
+                        <span id="phoneT" style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td colspan="2">
+                        <input type="text" placeholder="请输入学校详细地址" style="width:50%" id="hopAddress" onchange="linkman(event)">
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <h4 style="margin-top: 5%">学校科室信息</h4>
+            <table class="table table-bordered table-hover table-striped">
+                <tbody id="keShi">
+                <tr class="row" style="border: solid 1px #ffffff">
+                    <td class="col-md-6">
+                        <label style="font-size: 14px">科室名称</label>
+                    </td>
+                    <td class="col-md-6"></td>
+                </tr>
+                <tr class="row" style="border: solid 1px #ffffff">
+                    <td class="col-md-6"><div align="center"><input type="text" class="officeName" placeholder="请输入科室名称 只能是汉字" onchange="joinrome(event)">
+                        <span style="font-size: 10px;color: red">* 必填</span></div></td>
+                    <td style="position: relative" class="col-md-6"><div><button class="btn btn-danger" style="margin-right:4%;float: right" onclick="del(event)">-删除-</button></div></td>
+                </tr>
+                </tbody>
+            </table>
+            <div align="center">
+                <button class="btn btn-warning" onclick="add()">-点击添加-</button>
+            </div>
+            <h4 style="margin-top: 5%">学校业务信息</h4>
+            <table class="table table-bordered table-hover table-striped">
+                <tbody>
+                <tr class="row">
+                    <td class="col-md-6">
+                        <label>上一年全院门诊量：</label>
+                        <input id="lastYear" type="number" onchange="treat(event)" placeholder="就诊人数" >
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                    <td class="col-md-6">
+                        <label>上一年全院住院量：</label>
+                        <input id="hospitalization" type="number" onchange="treat(event)" placeholder="住院人数">
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td colspan="2">
+                        <label>上一年床位量：</label>
+                        <input type="number" onchange="treat(event)" id="lastYearBed" placeholder="床位数">
+                        <span style="font-size: 10px;color: red">* 必填</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div align="center" style="margin-bottom:6%;margin-top:5%"><button class="btn btn-success" onclick="saveInformation()" style="width: 180px">注册</button></div>
+        </section>
+
+    </div>
+</div>
+</body>
+<script src="../../libs/jctlibs/function.js"></script>
+<script type="text/javascript" src="../../libs/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../libs/register/hosp_register.js"></script>
+<script src="../../libs/register/md5.js"></script>
+<script src="../../libs/register/aes.js"></script>
+</html>

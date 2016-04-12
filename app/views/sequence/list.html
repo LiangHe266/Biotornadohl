@@ -1,0 +1,138 @@
+
+  <style type="text/css">
+
+div 
+
+{
+
+overflow: scroll
+
+}
+
+</style> 
+ </head>
+ <body>
+  <div class="container mt50"> 
+   <div class="row mt2"> 
+    <div class="tab-content tab-bordered"> 
+     <div class="alert with-icon "> 
+      <span class="mp7"> 输入序列：</span> 
+      <span class="col-md-3"><input type="text" class="form-control" placeholder="请输入生物序列" ng-model="searchMessage" ng-keypress="onSearchKey($event)" /></span>
+      <span class="ml10"> <button class="button button-glow button-rounded button-raised button-primary" ng-click="onSearch(searchMessage)"><i class="icon-search"></i>翻译</button> </span> 
+      <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="getSeq(searchMessage)"><i class="icon-search"></i>转录</button> </span> 
+      <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="comSeq(searchMessage)"><i class="icon-search"></i>互补序列</button> </span> 
+     </div> 
+     <div class="alert with-icon "> 
+      <br />
+      <span class="mp7">打开序列：</span>
+      <span class="col-md-3"><select class="form-control gre" ng-model="proId" style="height:32px" data-ng-init="getProvinces()" ng-options="item.id as item.name for item in provinces"><option value="" selected="selected">--选择一个序列文件--</option></select></span> 
+      <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="showSeq(searchMessage)"><i class="icon-search"></i>显示序列文件信息</button> </span> 
+      <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="uppSeq(searchMessage)"><i class="icon-search"></i>将序列文件全变为大写</button> </span> 
+      <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="sortSeq(searchMessage)"><i class="icon-search"></i>对序列文件进行排序</button> </span> 
+      <span class=""><a href="#/tmNew" class="button button-glow button-rounded button-raised button-primary" title="上传文件">上传文件</a></span> 
+      <span><button onclick="myFunction()" value="帮助说明" class="button button-glow button-rounded button-raised button-primary" title="帮助说明">帮助说明 </button></span>
+     </div> 
+     <!--<span class="ml10" ng-show="admin"> <a ng-click="onAdd()" class="button button-glow button-rounded button-raised button-primary"><i class="icon-plus"></i> 新增</a> </span>--> 
+     <div class="tab-panel"> 
+      <div class="panel mt2"> 
+       <div class="panel-heading "> 
+	<i class="icon-map-marker gre"> </i>数据结果
+       </div> 
+       <div class="panel-body"> 
+	<div class="col-md-2">
+	 <!-- 下载 --> 
+	 <button class="btn btn-primary" ng-click="downloadCaseFile()">下载 </button> 
+	</div>
+	<table data-ng-init="loadPatients()" class="table datatable table-bordered table-hover"> 
+	 <thead> 
+	  <tr> 
+	  </tr> 
+	 </thead> 
+	 <tbody> 
+	  <tr ng-app="bioseq" ng-dblclick="onEdit(bioseq)"> 
+	   <td>计算结果：</td>
+	  </tr>
+	  <tr>
+	   <td>{{bioseq}}</td> 
+	  </tr> 
+	  <tr ng-app="patients" ng-dblclick="onEdit(patients)"> 
+	   <td>ID：</td>
+	  </tr>
+	  <tr>
+	   <td>{{patients[0]}}</td>
+	   <td> </td> 
+	  </tr> 
+	  <tr ng-app="patients" ng-dblclick="onEdit(patients)"> 
+	   <td>名称：</td>
+	  </tr>
+	  <tr>
+	   <td>{{patients[3]}}</td>
+	   <td> </td> 
+	  </tr> 
+	  <tr ng-app="patients" ng-dblclick="onEdit(patients)"> 
+	   <td>序列：</td>
+	  </tr>
+	  <tr>
+	   <td>{{patients[1]}}</td> 
+	   <td> </td>
+	  </tr> 
+	  <tr ng-app="patients" ng-dblclick="onEdit(patients)"> 
+	   <td>长度：</td>
+	  </tr>
+	  <tr>
+	   <td>{{patients[2]}}</td> 
+	   <td> </td>
+	  </tr> 
+	  <tr ng-app="patients" ng-dblclick="onEdit(patients)"> 
+	   <td>描述：</td>
+	  </tr> 
+	  <tr>
+	   <td>{{patients[4]}}</td> 
+	  </tr>
+	  <tr ng-app="patients" ng-dblclick="onEdit(patients)"> 
+	  </tr> 
+	 </tbody> 
+	</table> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <script>
+
+
+
+    $(function(){
+
+
+
+	$("#del").modal({
+
+	    //设置点击背景遮罩不关闭弹框
+
+	    backdrop : 'static' ,
+
+	    //默认不显示
+
+	    show     : false
+
+
+
+	});
+
+    })
+
+
+
+function myFunction()
+
+{
+
+	alert("序列处理模块可以对序列串和序列进行一些操作，但是需要填入正确的序列，下载可以将处理后的序列文件下载回本地。\n 示例：\n转录:ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG\n翻译：AUGGCCAUUGUAAUGGGCCGCUGAAAGGGUGCCCGAUAG");
+
+}
+
+
+
+</script> 
+  </div>

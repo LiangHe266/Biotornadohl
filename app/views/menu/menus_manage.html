@@ -1,0 +1,143 @@
+﻿﻿
+<div class="container mt50">
+<div class="row mt2">
+  <div class="tab-content tab-bordered">
+    <div class="alert with-icon w">
+      <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="addParent()"><i class="icon-plus"></i> 新增根目录</a> </span>
+      <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="addMenu()"><i class="icon-plus"></i> 新增子菜单</a> </span>
+      <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="updateMenu()"><i class="icon-edit"></i> 修改</a> </span>
+      <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="showDeleteMenu()"><i class="icon-trash"></i> 删除</a> </span>
+      <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="addMenuItem()"><i class="icon-plus"></i> 新增菜单项</a> </span>
+    </div>
+      
+      <div class="row mt1">
+        <div class="col-md-3">
+            <div class="panel " style="height:400px;">
+                <div class="panel-heading ">菜单列表 </div>
+                <div class="panel-body" style="height:360px;overflow: scroll;" data-ng-init="getAllMenus()"> 
+                    <treecontrol class="tree-classic" tree-model="treedata" options="treeOptions" 
+                    on-selection="onSelectNode(node)" selected-node="selected" expanded-nodes="expandedNodes">{{node.name}}
+                    </treecontrol>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+          <div class="panel " style="height:400px;">
+              <div class="panel-heading ">菜单信息</div>
+              <div class="panel-body">
+                 <table class="table table-bordered">
+                  <tr>
+                    <td>菜单名称:</td>
+                    <td>{{cutMenu.name}}</td>
+                    <td>菜单编码:</td>
+                    <td>{{cutMenu.code}}</td>
+                    <td>排序:</td>
+                    <td>{{cutMenu.sort}}</td>
+                  </tr>
+                  <tr>
+                   <td>创建人:</td>
+                   <td>{{cutMenu.create_name}}</td>
+                   <td>创建时间:</td>
+                   <td>{{cutMenu.create_time}}</td>
+                   <td>父菜单:</td>
+                   <td>{{cutMenu.parent_name}}</td>
+                  </tr>
+                  <tr>
+                   <td>修改人:</td>
+                   <td>{{cutMenu.update_name}}</td>
+                   <td>修改时间:</td>
+                   <td>{{cutMenu.update_time}}</td>
+                  </tr>
+                </table>
+                <table class="table table-bordered table-hover" style="border-top:solid 1px #ddd" >
+                  <thead>
+                    <tr>
+                      <th>类型</th>
+                      <th>路径</th>
+                      <th>创建人</th>
+                      <th>创建时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tr ng-repeat="item in menuItems">
+                    <td>{{getType(item)}}</td>
+                    <td>{{item.path}}</td>
+                    <td>{{item.create_name}}</td>
+                    <td>{{item.create_time}}</td>
+                    <td><span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="updateMenuItem(item)">修改</a> </span>
+                        <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" data-toggle="modal" data-target="#tishi2" 
+                        ng-click="showDeleteMenuItem(item)"> 删除</a> </span>
+                    </td>
+                  </tr>
+                  
+                </table>
+              </div>
+           </div>
+        </div>
+      </div>
+</div>
+</div>
+
+<div class="modal" id="tishi" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>请确认是否删除菜单信息？</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="deleteMenu()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="tishi2" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>请确认是否删除菜单项信息？</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="deleteMenuItem(delItem)">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+

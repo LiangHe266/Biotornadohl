@@ -1,0 +1,168 @@
+﻿  <div class="container mt50"> 
+   <div class="row"> 
+    <div class="tab-content tab-bordered"> 
+     <div class="tab-panel"> 
+      <div class="panel mt2"> 
+       <div class="panel-body"> 
+	<form class="form-horizontal form-condensed" name="formRequest" role="form" ng-model="request"> 
+	 <legend class="gre" note="模型创建">模型创建</legend> 
+	 <span class="mp7">选择模型类型：</span>
+	 <span class="col-md-3"><select class="form-control gre" ng-model="proId" style="height:32px" data-ng-init="getProvinces()" ng-options="item.id as item.name for item in provinces" ng-change="showmodel()"><option value="" selected="selected">--选择一个模型类型--</option></select></span> 
+	 <div class="col-md-3"> 
+	  <div class="form-group"> 
+	   <label class="col-md-4 control-label ">模型名称：</label> 
+	   <div class="col-md-8"> 
+	    <input type="text" class="form-control gre" name="model_name" placeholder="输入模型名字" ng-model="request.name" /> 
+	   </div> 
+	  </div> 
+	 </div> 
+	 <div class="col-md-3"> 
+	  <div class="form-group"> 
+	   <label class="col-md-4 control-label ">参数个数：</label> 
+	   <div class="col-md-8"> 
+	    <input type="text" class="form-control gre" name="vc_namffe" placeholder="请输入训练参数个数" ng-model="request.len" /> 
+	   </div> 
+	  </div> 
+	 </div> 
+	 <div class="col-md-3"> 
+	  <div class="form-group"> 
+	   <label class="col-md-4 control-label ">模型说明：</label> 
+	   <div class="col-md-8"> 
+	    <input type="text" class="form-control gre" name="decript" placeholder="请输入模型介绍" ng-model="request.note" /> 
+	   </div> 
+	  </div> 
+	 </div> 
+	</form>
+       </div> 
+
+
+         <div class="col-md-3">
+          <div class="form-group">
+           <label class="col-md-4 control-label ">kNN算法中K值设定：</label>
+           <div class="col-md-8">
+            <input type="text" class="form-control gre" name="k_nmffe" placeholder="只有kNN模型需填写" ng-model="request.knum" />
+           </div>
+          </div>
+         </div>
+       <div class="col-md-12"> 
+	<legend class="gre" note="参数数据">参数数据</legend> 
+	<div class="form-group"> 
+	 <div class="col-md-12"> 
+	  <textarea rows="10" class="form-control gre" name="pat_abnormal_desc" placeholder="请输入数据，格式如:
+
+		      1,2,3  
+
+		      1,2,3 
+
+		      1,2,3" ng-model="request.xs"></textarea> 
+	 </div> 
+	</div> 
+       </div> 
+       <div class="col-md-12"> 
+	<legend class="gre" note="文件信息">结果数据</legend> 
+	<div class="form-group"> 
+	 <div class="col-md-12"> 
+	  <textarea type="text" class="form-control gre" name="vc_name" placeholder="请输入结果数据，格式如:1,1,1,1,1,1" ng-model="request.ys"></textarea> 
+	 </div> 
+	</div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="row"> 
+     <div class="col-md-12 text-center"> 
+      <button class="button button-3d button-primary button-rounded" ng-click="submitRequest(request)">开始训练</button> 
+      <button class="button button-3d button-primary button-rounded" ng-click="onClickBack()">返回</button> 
+     </div> 
+    </div>  
+   </div> 
+  </div>     
+  <div class="modal" id="del" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true"> 
+   <div class="modal-dialog" style="width:30%"> 
+    <div class="modal-content"> 
+     <div class="modal-header"> 
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
+      <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4> 
+     </div> 
+     <div class="modal-body"> 
+      <form class="form-horizontal" role="form" method="post"> 
+       <div class="container"> 
+	<p>确认删除文件吗</p> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="modal-footer"> 
+      <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button> 
+      <button type="button" ng-click="delFile()" class="btn btn-mini btn-success" data-dismiss="modal">确认</button> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true"> 
+   <div class="modal-dialog" style="width:30%"> 
+    <div class="modal-content"> 
+     <div class="modal-header"> 
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
+      <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4> 
+     </div> 
+     <div class="modal-body"> 
+      <form class="form-horizontal" role="form" method="post"> 
+       <div class="container"> 
+	<p>{{msg}}</p> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="modal-footer"> 
+      <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="onBack()">确认</button> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="modal" id="submitComfirm" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true"> 
+   <div class="modal-dialog" style="width:30%"> 
+    <div class="modal-content"> 
+     <div class="modal-header"> 
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
+      <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4> 
+     </div> 
+     <div class="modal-body"> 
+      <form class="form-horizontal" role="form" method="post"> 
+       <div class="container"> 
+	<p>{{submitConfirmMsg}}</p> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="modal-footer"> 
+      <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button> 
+      <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="doSubmit()">确认</button> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script type="text/javascript">
+
+
+
+  $(function () {
+
+
+
+    $("#del").modal({
+
+      //设置点击背景遮罩不关闭弹框
+
+      backdrop: 'static',
+
+      //默认不显示
+
+      show: false
+
+
+
+    });
+
+  })
+
+
+
+</script> 

@@ -1,0 +1,141 @@
+﻿﻿<link href="libs/zTree_v3/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+<div class="container mt50">
+<div class="row mt2">
+  <div class="tab-content tab-bordered" data-ng-init="getKnow($event)">
+    <div class="alert with-icon "> 
+      <span class="mp7"> 权限组： </span> <span class="col-md-3">
+      <input type="text" class="form-control" placeholder="权限组名称"  ng-model="searchMessage" >
+      </span> <span class="ml10">
+      <button class="button button-glow button-rounded button-raised button-primary" ng-click="searchGroup(searchMessage)"><i class="icon-search"></i> 查询</button>
+      <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="showAddGroup()"><i class="icon-plus"></i> 新增</a> </span>
+      <span class="ml10"> <a href="#/menus_aut_user_group" class="button button-glow button-rounded button-raised button-primary">用户授权</a> </span>
+    </div>
+
+      <div class="row mt1">
+        <div class="col-md-8">
+          <div class="panel " style="height:564px;">
+              <div class="panel-heading ">权限组列表</div>
+              <div class="panel-body">
+                <table class="table table-bordered table-hover" data-ng-init="getAutGroups()">
+                  <thead>
+                    <tr>
+                      <th>权限组名称</th>
+                      <th>创建人</th>
+                      <th>创建时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tr ng-repeat="item in groups" ng-dblclick="getMenusByGroup(item)">
+                    <td>{{item[1]}}</td>
+                    <td>{{item[2]}}</td>
+                    <td>{{item[4]}}</td>
+                    <td><span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="updateGroup(item)">修改</a> </span>
+                        <span class="ml10"> <a href="" class="button button-glow button-rounded button-raised button-primary" 
+                        ng-click="showDeleteGroup(item)"> 删除</a> </span>
+                    </td>
+                  </tr>
+                </table>
+                <div class="row text-center">
+                  <ul class="pager">
+                      <li class="previous" ><a href="" id="first" ng-click="page($event)">首页</a></li>
+                      <li class="previous" ><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                      <li ><a href="" id="beforeSL">...</a></li>
+                      <li ng-repeat="pageNumber in pageNumbers"><a href="" class="" id="{{pageNumber}}" ng-click="page($event)">{{pageNumber}}</a></li>
+                      <li ><a href="" id="afterSL">...</a></li>
+                      <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                      <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+                  </ul>
+                </div>
+              </div>
+           </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel " style="height:564px;">
+                <div class="panel-heading ">权限组：{{cutGroup[1]}} 
+                  <span ng-show="cutGroup" class="ml10" style="float:right;"> 
+                    <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="saveMenuForGroup()"> 保存</a> 
+                  </span>
+                  <span ng-show="cutGroup" class="ml10" style="float:right;"> 
+                    <a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="checkAll()"> {{checkMsg}}</a> 
+                  </span>
+                </div>
+                <div class="panel-body" style="height:524px;overflow: scroll;"> 
+                    <ul id="menu_tree" class="ztree"></ul>
+                </div>
+            </div>
+        </div>
+        
+      </div>
+</div>
+</div>
+
+<div class="modal" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-plus"></i> {{editType}}权限组</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post' name="groupform" novalidate ng-model="group">
+          <div class="container" >
+            <table class="table table-bordered" style="margin-bottom:0px">
+              <tr>
+                <td>权限组名称<span class="red_star">*<span></td>
+                <td><input type="text" class="form-control gre input-sm" ng_model="group.name" name="name" ng-change="checklength(group.name)">
+                <span style="color:red" ng-show="showName">名称不能为空，且长度不超过25字符</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="saveGroup()"  ng-disabled="showName">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="tishi" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>请确认是否删除权限组信息？</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="deleteGroup()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+

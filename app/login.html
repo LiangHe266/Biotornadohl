@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="myloginApp">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>用户登陆</title>
+</head>
+<link href="libs/zui/css/zui.min.css" rel="stylesheet">
+<link href="styles/login.css" rel="stylesheet">
+<body>
+<div style="margin-left: 85%;margin-top:1%;font-size: 16px"><a href="" style="color: #FFDC35">实验室注册</a> | <a style="color: #FFDC35" href="">学者注册</a></div>
+<div class="page-container">
+    <div class="font" style="color: #FFDC35" >
+        <!-- <img src="images/logo.png"/><br/> -->
+        <span>生命科学服务云平台</span> </div>
+</div>
+
+  <div class="row" style="margin-top: 6%">
+  <div ng-controller="loginCtrl">
+    <form  name="frmLogin" ng-model="objLoginInfo" novalidate>
+      <input type="text" name="username" class="username" placeholder="请输入用户名" ng-model="objLoginInfo.username" required>
+        <div ng-show="frmLogin.username.$error.required" style="color:red">用户名不能为空</div>
+      <input type="password"  name="password" class="password" placeholder="请输入密码"  ng-model="objLoginInfo.password" ng-minlength=6  ng-maxlength=20 required>
+        <div ng-show="frmLogin.password.$dirty && frmLogin.password.$invalid">
+          <span style="color:red" ng-show="frmLogin.password.$error.required">请输入您的密码</span>
+          <span style="color:red" ng-show="frmLogin.password.$error.minlength || frmLogin.password.$error.maxlength">密码由6-20字符组成</span>
+        </div>
+     <button type="button mt2" class="btn btn-info" ng-disabled="frmLogin.$invalid" ng-click="gotologin(objLoginInfo)" style="background:#FFDC35; width:90%" >登录</button>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript" src="libs/zui/lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="libs/angular/angular.js"></script>
+<script type="text/javascript" src="libs/angular-route/angular-route.min.js"></script>
+<script src="libs/angular-resource/angular-resource.min.js"></script>
+<script type="text/javascript" src="libs/zui/js/zui.min.js"></script>
+<script src="libs/jctlibs/function.js"></script>
+<script src="libs/cryptojslib/rollups/md5.js"></script>
+<script src="libs/cryptojslib/rollups/aes.js"></script>
+<script src="libs/cryptojslib/components/pad-zeropadding-min.js"></script>
+<script src="libs/jctlibs/base64.js"></script>
+<script src="scripts/services/svcLogin.js"></script>
+<script type="text/javascript" src="scripts/services/svcCommon.js"></script>
+<script type="text/javascript" src="scripts/controllers/ctrLogin.js"></script>
+
+</body>
+</html>

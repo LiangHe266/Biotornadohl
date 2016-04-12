@@ -1,0 +1,92 @@
+<!-- 新增账户 -->
+<form class="form-horizontal form-condensed" role="form" method="post" name="am" novalidate>
+  <div class="container mt50">
+    <div class="row mt2">
+      <div class="tab-content tab-bordered">
+        <div class="tab-panel" >
+          <div class="panel mt2">
+            <div class="panel-heading " ng-model="accountmessage"> <i class="icon-map-marker gre"> </i>新增账户</div>
+            <div class="panel-body">
+              <table class="table table-bordered">
+                <tr>
+                  <td>姓名<span class="red_star">*</span></td>
+                  <td><input type="text" class="form-control gre" name="name" ng-model="accountmessage.name" required ng-change="nameChange()"><span style="color:red" ng-show="showname">姓名不能为空</span></td>
+                  <td>用户名<span class="red_star">*</span></td>
+                  <td><input type="text" class="form-control gre" name="username" ng-model="accountmessage.username" required ng-change="usernameChange()"><span style="color:red" ng-show="showusername">用户名不能为空</span></td>                 
+                  <td>密码<span class="red_star">*</span></td>
+                  <td><input type="password" class="form-control gre" ng-model="accountmessage.password1" name="pass1" ng-minlength=6  ng-maxlength=20 required ng-change="pass1Change()">
+                      <span style="color:red" ng-show="showpass1">密码不能为空,且长度为6-20字符</span></td>
+                  <td>密码确认<span class="red_star">*</span></td>
+                  <td><input type="password" class="form-control gre" ng-model="accountmessage.password2" name="pass2" ng-change="pass2Change()" required>
+                      <span style="color:red" ng-show="showpass2">
+                      密码不相等</span></td>
+                </tr>
+                <tr>
+                  <td>科室<span class="red_star">*</span></td>
+                  <td><select class="form-control gre" ng-model="accountmessage.dept_id" name="dept_id" ng-options="item.id as item.name for item in depts" required ng-change="deptChange()">
+                    <option value="" selected="selected">--选择科室--</option></select>
+                    <span style="color:red" ng-show="showdept">科室不能为空</span></td>
+                  <td>职称<span class="red_star">*</span></td>
+                  <td><select class="form-control gre" ng-model="accountmessage.title" name="title" ng-options="item.code as item.name for item in titles" required ng-change="titleChange()">
+                    <option value="" selected="selected">--选择职称--</option></select>
+                    <span style="color:red" ng-show="showtitle">职称不能为空</span></td>
+                  <td>职务<span class="red_star">*</span></td>
+                  <td><select class="form-control gre" ng-model="accountmessage.post" name="post" ng-options="item.code as item.name for item in posts" required ng-change="postChange()">
+                    <option value="" selected="selected">--选择职务--</option></select>
+                    <span style="color:red" ng-show="showpost">职务不能为空</span></td>
+                  <td>电话</td>
+                  <td><input type="text" class="form-control gre" name="phone" ng-model="accountmessage.phone"></td>
+                </tr>
+                <tr>
+                  <td>介绍</td>
+                  <td colspan="5"><input type="text" class="form-control gre" name="introduce" ng-model="accountmessage.introduce"></td>
+                </tr>
+                <!--<tr>
+                  <td>菜单权限组<span class="red_star">*</span></td>
+                  <td><select class="form-control gre" ng-model="accountmessage.menusAut_id" name="menusAut" ng-options="item.menusAut_id as item.menusAut_name for item in selectMenusAutIds" required ng-change="menusAutChange()">
+                    <option value="" selected="selected">--选择菜单权限组--</option></select>
+                    <span style="color:red" ng-show="showmenusaut">菜单权限组不能为空</span></td>
+                  <td class="dataAut">数据权限组<span class="red_star">*</span></td>
+                  <td class="dataAut"><select id="dataAut" class="form-control gre" ng-model="accountmessage.dataAut_id" name="dataAut" ng-options="item.dataAut_id as item.dataAut_name for item in selectDataAutIds">
+                    <option value="" selected="selected">--选择数据权限组--</option></select>
+                    <span style="color:red" id="dataAut1" ng-show="showdataaut">数据权限组不能为空</span></td>
+                </tr>-->
+              </table>
+              <div class="row">
+                <hr />
+                <div class="col-md-12 text-center">
+                  <button class="button mbo3 mt2"  ng-click="save(accountmessage)">保存</button>
+                  <button class="button mbo3  ml30 hui" ng-click="back()">返回</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- 提示框 -->
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal" ng-click="gowhere()">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

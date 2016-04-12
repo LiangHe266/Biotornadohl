@@ -1,0 +1,104 @@
+<!-- 账户管理 -->
+<div class="container mt50">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered">
+      <div class="alert with-icon "> 
+        <span class="mp7">账户姓名查询：</span> <span class="col-md-2"><input type="text" class="form-control" placeholder="请输入姓名"  ng-model="searchMessage" ></span>
+        <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="searchAccount(searchMessage)"><i class="icon-search"></i> 查询</button></span> 
+        <span class="ml10"> <a href="#/add_account" class="button button-glow button-rounded button-raised button-primary"><i class="icon-plus"></i> 新增</a></span>  
+      </div>
+      <div class="tab-panel">
+        <div class="panel mt2">
+          <div class="panel-heading"><i class="icon-map-marker gre"> </i>账户列表</div>
+          <div class="panel-body">
+            <table data-ng-init="loadAccounts()" class="table datatable table-bordered table-hover" >
+              <thead>
+                <tr>
+                  <th>用户名</th>
+                  <th>姓名</th>
+                  <th>类型</th>
+                  <th>状态</th>  
+                  <th>创建人</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                 <tr ng-repeat="account in accounts ">
+                  <td>{{account[1]}}</td>   
+                  <td>{{account[2]}}</td>  
+                  <td>{{account[3]}}</td>  
+                  <td>{{account[4]}}</td>  
+                  <td>{{account[5]}}</td>  
+                  <td>{{account[6]}}</td>  
+                  <td><span class="ml10"><input type="button" class="button button-glow button-rounded button-raised button-primary" value="{{change(account[4])}}" ng-click="changestatus(account)"/></span>
+                      <span class="ml10"><a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="saveInfoTochangepass(account)">修改密码</a></span>
+                      <span class="ml10"><a href="" class="button button-glow button-rounded button-raised button-primary" ng-click="saveAccountInfo(account)">修改信息</a></span>
+                      <span class="ml10"><a href="" class="button button-glow button-rounded button-raised button-primary" data-toggle="modal" data-target="#tishi" ng-click="showDeleteAccount(account)"> 删除</a> </span>
+                  </td>
+                </tr> 
+              </tbody>
+            </table>
+
+              <div class="row text-center">
+                  <ul class="pager">
+                      <li class="previous" ><a href="" id="first" ng-click="page($event)">首页</a></li>
+                      <li class="previous" ><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                      <li ><a href="" id="beforeSL">...</a></li>
+                      <li ng-repeat="pageNumber in pageNumbers"><a href="" class="" id="{{pageNumber}}" ng-click="page($event)">{{pageNumber}}</a></li>
+                      <li ><a href="" id="afterSL">...</a></li>
+                      <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                      <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+                  </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--删除信息提示框-->
+<div class="modal" id="tishi" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>亲,您确定要删除当前账户信息吗</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" ng-click="deleteAccount(accountMessage)" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 提示框 -->
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal" ng-click="gowhere()">确定</button>
+      </div>
+    </div>
+  </div>
+</div>

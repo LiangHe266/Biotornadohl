@@ -1,0 +1,850 @@
+<div class="container mt50">
+  <div class="row">
+
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel">
+	<div class="panel mt2">
+	  <div class="panel-body">
+
+	    <form class="form-horizontal form-condensed" name="formRequest" role="form" ng-model="request">
+
+    
+	      <legend class="gre mt20" note="附加资料">附加文档等资料</legend>
+
+	      <div class="row">
+		<div class="col-md-12">
+		  <div class="panel">
+		    <div class="panel-heading "><i class="icon-map-marker gre"> </i>文件列表</div>
+		    <div class="panel-body">
+		      <table data-ng-init="" class="table datatable table-bordered table-hover" id="upload_detail">
+			<thead>
+			<tr>
+			  <th>序号</th>
+			  <th>资料名称</th>
+			  <th>大小</th>
+			  <th>上传进度</th>
+			  <th>连接</th>
+			  <th>操作</th>
+			</tr>
+			</thead>
+			<tbody>
+
+			<tr ng-repeat="item in uploader.queue track by $index" id="fi_{{$index}}">
+			  <td>{{$index + 1}}</td>
+			  <td>{{item.file.name}}</td>
+			  <td nowrap><a ng-show="uploader.isHTML5">{{ item.file.size/1024/1024|number:2 }} MB</a></td>
+			  <td>
+			    <div class="progress" style="margin-bottom: 0;" ng-show="uploader.isHTML5">
+			      <div class="progress-bar" role="progressbar"
+				   ng-style="{ 'width': item.progress + '%' }"></div>
+			    </div>
+			  </td>
+
+			  <td><a href="{{item.response.path}}" target="_blank">{{item.response.path}}</a></td>
+
+			  <td>
+			    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()"
+				    ng-hide="item.isReady || item.isUploading || item.isSuccess">
+			      <span class="glyphicon glyphicon-upload"></span> 上传
+			    </button>
+			    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()"
+				    ng-hide="!item.isUploading">
+			      <span class="glyphicon glyphicon-ban-circle"></span> 取消
+			    </button>
+			    <button type="button" class="btn btn-danger btn-xs" ng-click="tryDelFile(item)">
+			      <span class="glyphicon glyphicon-trash"></span> 删除
+			    </button>
+			  </td>
+			</tr>
+			</tbody>
+		      </table>
+		    </div>
+		  </div>
+		</div>
+	      </div>
+
+	      <div class="row">
+		<div class="col-md-12 text-center">
+		  <button class="fileUpload button">
+		    <span>本地上传</span>
+		    <input type="file" id="local_upload" class="upload" nv-file-select uploader="uploader"
+			   accept=".doc,.docx,.ppt,.pptx,.pdf" multiple/>
+		  </button>
+		  <h4>支持doc,docx,ppt,pptx,pdf格式文件（必须上传文件）</h4>
+		</div>
+	      </div>
+
+	      <legend class="gre" note="文件信息">案例简述</legend>
+	      <div class="row">
+		<div class="col-md-12">
+		  <div class="form-group">
+		    <div class="col-md-12">
+		      <textarea rows='10' class="form-control gre" name="pat_abnormal_desc" placeholder="请输入案例简述" ng-model="request.descp"></textarea>
+		    </div>
+		  </div>
+		</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-12 text-center">
+		  <button class="button mbo3 mt2" ng-click="submitRequest(request)">提交申请</button>
+		  <button class="button hui mbo3 mt2 ml10" ng-click="onClickBack()">返回</button>
+		</div>
+	      </div>
+	    </form>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="del" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+	<form class="form-horizontal" role="form" method='post'>
+	  <div class="container">
+	    <p>确认删除文件吗</p>
+	  </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+	<button type="button" ng-click="delFile()" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+	<form class="form-horizontal" role="form" method='post'>
+	  <div class="container">
+	    <p>{{msg}}</p>
+	  </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="onBack()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="submitComfirm" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle"
+     aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+	<form class="form-horizontal" role="form" method='post'>
+	  <div class="container">
+	    <p>{{submitConfirmMsg}}</p>
+	  </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+	<button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="doSubmit()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  $(function () {
+
+    $("#del").modal({
+      //设置点击背景遮罩不关闭弹框
+      backdrop: 'static',
+      //默认不显示
+      show: false
+
+    });
+  })
+
+</script>
+
+<style>
+    .row{
+	margin-top:10px;
+    }
+    label{
+	text-align: right;
+    }
+</style>
+<div class="container mt50">
+  <div class="row">
+    <ul class="htab nav nav-tabs mt2" id="tabs">
+      <li class="active" id="patinf"><a href="" ng-click="gotoBasic()">患者信息 </a></li>
+      <li id="gotodiag"><a href="" ng-click="gotodiag()">门诊文档</a></li>
+      <li id="gotobehos"><a href="" ng-click="gotobehos()">住院记录</a></li>
+      <li id="gototest"><a href="" ng-click="gototest()">实验室检验</a></li>
+      <li id="gotoexam"><a href="" ng-click="gotoexam()">影像学检查</a></li>
+      <li id="gotopis"><a href="" ng-click="gotopis()">病理学检查</a></li>
+      <li id="gotoecg"><a href="" ng-click="gotoecg()">心电检查</a></li>
+    </ul>
+  </div>
+    <div class="tab-panel" id="Basic">
+	<div class="panel mt2">
+	    <div class="panel-heading "> <i class="icon-map-marker gre"> </i>患者详细信息</div>
+	    <div class="panel-body">
+	       <div class="row">
+		   <label class="col-md-3">健康卡:{{patients.health_no}}</label>
+		   <label class="col-md-6"></label>
+		   <label class="col-md-1">病案号:{{patients.case_no}}</label>
+	       </div>
+		<hr>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">姓名:</label>
+			    <div class="col-md-8"><input type="text" class="form-control gre ng-vilid" ng-model="patients.name" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">性别:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.sex" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">出生日期:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.birthday" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">年龄:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.age" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">国籍:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.country" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">出生地:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.home_place" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">籍贯:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.native_place" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">民族:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.nation" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">身份证号:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.id_no" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">职业:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.job" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">婚姻:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.marriage" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-6">
+			<div class="form-group">
+			    <label class="col-md-2 ">现住地址:</label>
+			    <div class="col-md-10"><input class="form-control gre ng-vilid" type="text" ng-model="patients.actual_address" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">电话:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.phone" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">邮编:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.actual_zip_code" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-9">
+			<div class="form-group">
+			    <label class="col-md-1" style="width: 10.8%">户口地址:</label>
+			    <div class="col-md-11" style="width: 89.2%"><input class="form-control gre ng-vilid" ng-model="patients.register_address" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">邮编:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.register_zip_code" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-6">
+			<div class="form-group">
+			    <label class="col-md-2 ">工作单位/地址:</label>
+			    <div class="col-md-10"><input class="form-control gre ng-vilid" type="text" ng-model="patients.company_address" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">单位电话:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.company_phone" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">邮编:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.company_zip_code" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">联系人:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.contractor" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">关系:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.relation" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">地址:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.contractor_address" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">电话:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.contractor_phone" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">入院途径:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.enter_path" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">入院日期:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.enter_date" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">入院科室:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.enter_dept" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">病房:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.room" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">转科科别:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.trans_dept" type="text" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">出院日期:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.out_date" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">出院科室:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.out_dept" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">病房:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.room" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">实际住院:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" ng-model="patients.in_duration" type="text" class="form-control gre ng-vilid" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-9">
+			<div class="form-group">
+			    <label class="col-md-1" style="width: 10.8%">门(急)诊诊断:</label>
+			    <div class="col-md-11" style="width: 89.2%"><input class="form-control gre ng-vilid" ng-model="patients.clinic_diagnose" type="text" readonly></div>
+			</div>
+		    </div>
+		    <div class="col-md-3">
+			<div class="form-group">
+			    <label class="col-md-4 ">疾病编码:</label>
+			    <div class="col-md-8"><input class="form-control gre ng-vilid" type="text" ng-model="patients.disease_code" readonly></div>
+			</div>
+		    </div>
+		</div>
+		<div class="row">
+		    <label class="col-md-1 ">既往病史:</label>
+		    <div class="col-md-11"><textarea class="form-control gre ng-vilid" type="text" ng-model="patients.pmh" readonly></textarea></div>
+		</div>
+		<div class="row">
+		    <label class="col-md-1 ">家族病史:</label>
+		    <div class="col-md-11"><textarea class="form-control gre ng-vilid" type="text" ng-model="patients.fmh" readonly></textarea></div>
+		</div>
+		<div class="row">
+		    <label class="col-md-1 ">过敏史:</label>
+		    <div class="col-md-11"><textarea class="form-control gre ng-vilid" type="text" ng-model="patients.allergic_history" readonly></textarea></div>
+		</div>
+		<div class="row">
+		    <label class="col-md-1 ">婚育史:</label>
+		    <div class="col-md-11"><textarea class="form-control gre ng-vilid" type="text" ng-model="patients.obsterical_history" readonly></textarea></div>
+		</div>
+		<div class="row">
+		    <label class="col-md-1 ">月经史:</label>
+		    <div class="col-md-11"><textarea class="form-control gre ng-vilid" type="text" ng-model="patients.menstrual_history" readonly></textarea></div>
+		</div>
+	    </div>
+	</div>
+    </div>
+    <div class="row" id="checkTime" style="display: none">
+	<div class="mt2">
+	    <div class="alert with-icon mt1 w">
+		<span class="mp7 gre"> 患者姓名：<b>{{patients.name}}</b>　性别：<b>{{patients.sex}}</b>　年龄:<b>{{patients.age}}岁</b>　　</span>
+		<span class="mp7">　　　　开始日期 </span> <span class="col-md-2">
+	  <input type="text" class="form-date form-control" data-date-format="yyyy-mm-dd"  placeholder="请选择日期" ng-model="PMedH_BeginDate" id="s"/>
+	  </span> <span class="mp7">结束日期 </span> <span class="col-md-2">
+	  <input class="form-date form-control" data-date-format="yyyy-mm-dd" placeholder="请选择日期" ng-model="PMedH_EndDate" id="e" />
+	  </span>
+		<button class="button button-glow button-rounded button-raised button-primary" ng-click="queryMaster()"><i class="icon-search"></i> 查询</button>
+	    </div>
+	</div>
+    </div>
+    <div class="tab-panel" id="diag" style="display: none;padding: 0;margin: 0">
+	<div class="panel col-md-5" data-ng-init="loadDiagData()" style="margin: 0">
+	    <table class="table table-bordered panel-heading">
+		<tr><th width="100">就诊时间</th><th width="160">诊断结果</th><th width="90">科室</th><th width="60">医生</th></tr>
+	    </table>
+
+	    <div class="panel-body"  style='min-height:420px; OVERFLOW: auto'>
+
+		<table ng-repeat="m in diag" class="table table-bordered table-hover">
+		    <tr ng-click="onClickDiag(m)" >
+			<td width="100">{{m.picnic_time}}</td>
+			<td width="160">{{m.medical_result}}</td>
+			<td width="90">{{m.dept_id}}</td>
+			<td width="60">{{m.doctor_name}}</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+	<div class="col-md-7">
+	    <div class="tab-content tab-bordered">
+		<div class="tab-panel" >
+		    <div class="panel"  >
+			<div class="panel-heading " ng-model="reports"> <i class="icon-map-marker gre"> </i>诊断报告</div>
+			<div class="panel-body" style='min-height:420px; OVERFLOW: auto;opacity: 0 'id="diagifo">
+			    <div>
+				<table class="table table-bordered" >
+				    <tr style="border-bottom:1px solid black;" >
+					<td><span class="mp7 gre">姓名:</span></td><td><span class="mp7 gre">{{diagifo.patient_name}}</span></td>
+					<td><span class="mp7 gre">日期:</span></td><td><span class="mp7 gre">{{diagifo.picnic_time}}</span></td>
+					<td><span class="mp7 gre">科室:</span></td><td><span class="mp7 gre">{{diagifo.dept_id}}</span></td>
+					<td><span class="mp7 gre">医生:</span></td><td><span class="mp7 gre">{{diagifo.doctor_name}}</span></td>
+				    </tr>
+				</table>
+
+				<table class="table table-bordered">
+				    <tr><td><B>主诉：</B>{{diagifo.main_suit}}</td></tr>
+				    <tr>
+				    <td><b>现病史：</b>{{diagifo.medical_history}}</td>
+				    </tr>
+				    <tr>
+				     <td><b>既往史：</b>{{diagifo.previous_history}}</td>
+				    </tr>
+				    <tr>
+					<td><b>药物过敏史：</b>{{diagifo.drug_allergic_history}}</td>
+				    </tr>
+				    <tr>
+					<td><b>体格检查：</b>{{diagifo.body_check}}</td>
+				    </tr>
+				    <tr>
+					<td><b>辅助检查：</b>{{diagifo.assis_check}}</td>
+				    </tr>
+				    <tr>
+					<td><b>诊断：</b>{{diagifo.diagnose_code}}</td>
+				    </tr>
+				    <tr>
+					<td><b>处理：</b>{{diagifo.handle}}</td>
+				    </tr>
+				    <tr style="border-top:1px solid black;" class="gre">
+					<td><b>报告者：</b>{{diagifo.create_person}} 　　 <b>报告时间：</b>{{diagifo.create_time}} 　　 报告状态：{{diagifo.handle}}</td>
+				    </tr>
+				</table>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+    </div>
+    <div class="tab-panel" id="behos" style="display: none">
+	<div class="panel col-md-5" style="margin: 0">
+	    <table class="table table-bordered panel-heading">
+		<tr><th width="100"> 入院时间</th><th width="160">入院原因</th><th width="90">科室</th><th width="60">医生</th></tr>
+	    </table>
+
+	    <div class="panel-body"  style='min-height:420px; OVERFLOW: auto; '>
+
+		<table  class="table table-bordered table-hover">
+		    <tr ng-repeat="m in behos" ng-click="onClickbehos(m)" >
+			<td width="100">{{m.in_date}}</td>
+			<td width="160">{{m.in_reason}}</td>
+			<td width="90">{{m.in_dept_name}}</td>
+			<td width="60">{{m.doctor_name}}</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+	<div class="col-md-7">
+	    <div class="tab-content tab-bordered">
+		<div class="tab-panel" >
+		    <div class="panel"  >
+			<div class="panel-heading "> <i class="icon-map-marker gre"> </i>住院报告</div>
+			<div class="panel-body" style='min-height:420px; OVERFLOW: auto;opacity: 0' id="behosinfo">
+			    <div>
+				<table class="table table-bordered" >
+				    <tr style="border-bottom:1px solid black">
+					<td><span class="mp7 gre">姓名:</span></td><td><span class="mp7 gre">{{behosinfo.patient_name}}</span></td>
+					<td><span class="mp7 gre">日期:</span></td><td><span class="mp7 gre">{{behosinfo.in_date}}</span></td>
+					<td><span class="mp7 gre">科室:</span></td><td><span class="mp7 gre">{{behosinfo.out_dept_name}}</span></td>
+					<td><span class="mp7 gre">医生:</span></td><td><span class="mp7 gre">{{behosinfo.doctor_name}}</span></td>
+				    </tr>
+				</table>
+
+				<table class="table table-bordered">
+				    <tr><td><B>床号：</B>{{behosinfo.bed_no}}</td></tr>
+				    <tr><td><B>姓名：</B>{{behosinfo.patient_name}}</td></tr>
+				    <tr><td><B>出生日期：</B>{{behosinfo.birthday}}</td></tr>
+				    <tr><td><B>入院日期：</B>{{behosinfo.in_date}}</td></tr>
+				    <tr><td><B>出院日期：</B>{{behosinfo.out_datek}}</td></tr>
+				    <tr><td><B>入院科室：</B>{{behosinfo.in_dept_name}}</td></tr>
+				    <tr><td><B>出院科室：</B>{{behosinfo.out_dept_name}}</td></tr>
+				    <tr><td><B>主诉：</B>{{behosinfo.main_suit}}</td></tr>
+				    <tr><td><B>既往史：</B>{{behosinfo.previous_history}}</td></tr>
+				    <tr><td><B>药物过敏史：</B>{{behosinfo.drug_allergic_history}}</td></tr>
+				    <tr><td><B>家族史：</B>{{behosinfo.family_history}}</td></tr>
+				    <tr><td><B>体格检查：</B>{{behosinfo.body_check}}</td></tr>
+				    <tr><td><B>学校编码：</B>{{behosinfo.hospital_code}}</td></tr>
+				    <tr><td><B>医生姓名：</B>{{behosinfo.doctor_name}}</td></tr>
+				    <tr><td><B>月经史：</B>{{behosinfo.mens_history}}</td></tr>
+				    <tr style="border-top:1px solid black;" class="gre">
+					<td><b>报告者：</b>{{behosinfo.recorder_name}} 　　 <b>报告时间：</b>{{behosinfo.record_time}} 　　 报告状态：{{behosinfo.status}}</td>
+				    </tr>
+				</table>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+    </div>
+    <div class="tab-panel" style="display: none" id="test">
+	<div class="panel col-md-5" style="margin: 0">
+	    <table class="table table-bordered panel-heading">
+		<tr><th width="100"> 检验日期</th><th width="160">检验内容</th><th width="90">科室</th><th width="60">医生</th></tr>
+	    </table>
+
+	    <div class="panel-body"  style='min-height:420px; OVERFLOW: auto; '>
+
+		<table  class="table table-bordered table-hover">
+		    <tr ng-repeat="m in test" ng-click="onClicktest(m)" >
+			<td width="100">{{m.check_date}}</td>
+			<td width="160">{{m.check_item}}</td>
+			<td width="90">{{m.dept_name}}</td>
+			<td width="60">{{m.doctor_name}}</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+	<div class="col-md-7">
+	    <div class="tab-content tab-bordered">
+		<div class="tab-panel" >
+		    <div class="panel"  >
+			<div class="panel-heading " ng-model="reports"> <i class="icon-map-marker gre"> </i>检验报告</div>
+			<div class="panel-body" style='min-height:420px; OVERFLOW: auto;opacity: 0' id="testifo">
+			    <div ng-show="noTestReport"><span>没有找到该报告！</span></div>
+			    <div>
+
+				<table class="table table-bordered table-hover">
+				    <tr style="border-bottom:1px solid black;" ng-repeat="m in test" >
+					<td><span class="mp7 gre">姓名: {{maintest.patient_name}}</span></td><td><span class="mp7 gre"></span></td>
+					<td><span class="mp7 gre"></span></td><td class="text-right"><span class="mp7 gre text-right">科室: {{maintest.dept_name}}</span></td><td></td>
+				    </tr>
+				    <tr style="border-bottom:1px solid black" >
+					<th>检查项目</th>
+					<th>数值</th>
+					<th>单位</th>
+					<th>结果</th>
+				    </tr>
+				    <tr ng-repeat="item in testinf" style="{{item.style}}">
+					<td>{{item.detail_item_name}}</td>
+					<td>{{item.detail_result}}</td>
+					<td>{{item.unit}}</td>
+					<td>{{item.is_right}}</td>
+				    </tr>
+				    <tr style="border-top:1px solid black;" >
+					<td><span class="mp7 gre">日期: {{maintest.check_date}}</span></td><td><span class="mp7 gre"></span></td>
+					<td><span class="mp7 gre"></span></td><td><span class="mp7 gre">医生: {{maintest.doctor_name}}</span></td>
+					<td></td>
+				    </tr>
+
+				</table>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+    </div>
+    <div class="tab-panel" style="display: none" id="exam">
+	<div class="panel col-md-5" style="margin: 0">
+	    <table class="table table-bordered panel-heading">
+		<tr><th width="100"> 检查日期</th><th width="160">检查内容</th><th width="90">科室</th><th width="60">医生</th></tr>
+	    </table>
+
+	    <div class="panel-body"  style='min-height:420px; OVERFLOW: auto; '>
+
+		<table  class="table table-bordered table-hover">
+		    <tr ng-repeat="m in exam" ng-click="onClickexam(m)" >
+			<td width="100">{{m.check_date}}</td>
+			<td width="160">{{m.check_item_name}}</td>
+			<td width="90">{{m.dept_name}}</td>
+			<td width="60">{{m.doctor_name}}</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+	<div class="col-md-7">
+	    <div class="tab-content tab-bordered">
+		<div class="tab-panel" >
+		    <div class="panel"  >
+			<div class="panel-heading " ng-model="reports">
+			    <span><i class="icon-map-marker gre"> </i>检查报告</span>
+			    <span id="checkexam" style="visibility: hidden"><a href="" ng-click="onShowExamImage()" class="button button-glow button-rounded button-raised button-primary pull-right mbt3 " ><i class="icon icon-picture"> 点击查看影像资料 </i></a></span>
+			</div>
+			<div class="panel-body" style='min-height:420px; OVERFLOW: auto;opacity: 0' id="examifo">
+			    <div ng-show="noExamReport"><span>没有找到该报告！</span></div>
+			    <div>
+
+				<table class="table table-bordered" >
+				    <tr style="border-bottom:1px solid black;" >
+					<td><span class="mp7 gre">姓名:</span></td><td><span class="mp7 gre">{{mainexam.patient_name}}</span></td>
+					<td><span class="mp7 gre">检查时间:</span></td><td><span class="mp7 gre">{{mainexam.check_date}}</span></td>
+					<td><span class="mp7 gre">申请科室:</span></td><td><span class="mp7 gre">{{mainexam.dept_name}}</span></td>
+					<td><span class="mp7 gre">申请医生:</span></td><td><span class="mp7 gre">{{mainexam.doctor_name}}</span></td>
+				    </tr>
+				</table>
+
+				<table class="table table-bordered" id="contentAdd">
+
+				    <tr><td><B>诊断结论：</B><br/>{{mainexam.diagnose_conclusion}}</td></tr>
+
+				    <tr><td><B>影像描述：</B><br/>{{mainexam.check_view}}</td></tr>
+				    <tr><td><B>诊断意见：</B><br/>{{mainexam.diagnose_opinion}}</td></tr>
+
+				    <tr style="border-top:1px solid black;" class="gre"><td><b>报告时间：</b>{{mainexam.report_time}} </td></tr>
+
+				</table>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+    </div>
+    <div class="tab-panel" style="display: none" id="pis">
+	<div class="panel col-md-5" data-ng-init="loadDiagData()" style="margin: 0">
+	    <table class="table table-bordered panel-heading">
+		<tr><th width="100">检查日期</th><th width="160">检查结果</th><th width="90">科室</th><th width="60">医生</th></tr>
+	    </table>
+
+	    <div class="panel-body"  style='min-height:420px; OVERFLOW: auto; '>
+
+		<table  class="table table-bordered table-hover">
+		    <tr ng-repeat="m in pis" ng-click="onClickpis(m)" >
+			<td width="100">{{m.check_date}}</td>
+			<td width="160">{{m.diagnose_conclusion}}</td>
+			<td width="90">{{m.dept_name}}</td>
+			<td width="60">{{m.doctor_name}}</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+	<div class="col-md-7">
+	    <div class="tab-content tab-bordered">
+		<div class="tab-panel" >
+		    <div class="panel"  >
+			<div class="panel-heading " ng-model="reports"> <i class="icon-map-marker gre"> </i>检查报告</div>
+			<div class="panel-body" style='min-height:420px; OVERFLOW: auto;opacity: 0' id="pisinfo">
+			    <div>
+				<table class="table table-bordered" >
+				    <tr style="border-bottom:1px solid black;" >
+					<td><span class="mp7 gre">姓名:</span></td><td><span class="mp7 gre">{{pisifo.patient_name}}</span></td>
+					<td><span class="mp7 gre">日期:</span></td><td><span class="mp7 gre">{{pisifo.check_date}}</span></td>
+					<td><span class="mp7 gre">科室:</span></td><td><span class="mp7 gre">{{pisifo.deept_name}}</span></td>
+					<td><span class="mp7 gre">医生:</span></td><td><span class="mp7 gre">{{pisifo.doctor_name}}</span></td>
+				    </tr>
+				</table>
+
+				<div class="text-ac"><img src="{{pisifo.url}}" width="80%"/> </div>
+
+				<table class="table table-bordered">
+				    <tr><td><B>诊断结论：</B><br/>{{pisifo.diagnose_conclusion}}</td></tr>
+
+				    <tr><td><B>影像描述：</B><br/>{{pisifo.check_view}}</td></tr>
+				    <tr><td><B>诊断意见：</B><br/>{{pisifo.diagnose_opinion}}</td></tr>
+				    <tr style="border-top:1px solid black;" class="gre">
+					<td><b>报告时间：</b>{{pisifo.report_time}}</td>
+				    </tr>
+				</table>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+      </div>
+    <div class="tab-panel" style="display: none" id="ecg">
+	<div class="panel col-md-5" data-ng-init="loadDiagData()" style="margin: 0">
+	    <table class="table table-bordered panel-heading">
+		<tr><th width="100">检查日期</th><th width="160">检查结果</th><th width="90">科室</th><th width="60">医生</th></tr>
+	    </table>
+
+	    <div class="panel-body"  style='min-height:420px; OVERFLOW: auto; '>
+
+		<table  class="table table-bordered table-hover">
+		    <tr ng-repeat="m in ecg" ng-click="onClickecg(m)" >
+			<td width="100">{{m.check_date}}</td>
+			<td width="160">{{m.diagnose_conclusion}}</td>
+			<td width="90">{{m.dept_name}}</td>
+			<td width="60">{{m.doctor_name}}</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+	<div class="col-md-7">
+	    <div class="tab-content tab-bordered">
+		<div class="tab-panel" >
+		    <div class="panel"  >
+			<div class="panel-heading " ng-model="reports"> <i class="icon-map-marker gre"> </i>检查报告</div>
+		    <div class="panel-body" style='min-height:420px; OVERFLOW: auto;opacity:0' id="ecgifo">
+			    <div>
+				<table class="table table-bordered" >
+				    <tr style="border-bottom:1px solid black;" >
+					<td><span class="mp7 gre">姓名:</span></td><td><span class="mp7 gre">{{ecginfo.patient_name}}</span></td>
+					<td><span class="mp7 gre">日期:</span></td><td><span class="mp7 gre">{{ecginfo.check_date}}</span></td>
+					<td><span class="mp7 gre">科室:</span></td><td><span class="mp7 gre">{{ecginfo.dept_name}}</span></td>
+					<td><span class="mp7 gre">医生:</span></td><td><span class="mp7 gre">{{ecginfo.doctor_name}}</span></td>
+				    </tr>
+				</table>
+
+				<div class="text-ac" ><img src="{{ecginfo.url}}" width="80%"/> </div>
+
+				<table class="table table-bordered">
+				    <tr><td><B>诊断结论：</B><br/>{{ecginfo.diagnose_conclusion}}</td></tr>
+
+				    <tr><td><B>影像描述：</B><br/>{{ecginfo.check_view}}</td></tr>
+				    <tr><td><B>诊断意见：</B><br/>{{ecginfo.diagnose_opinion}}</td></tr>
+				    <tr style="border-top:1px solid black;" class="gre">
+					<td><b>报告时间：</b>{{ecginfo.report_time}}</td>
+				    </tr>
+				</table>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+	</div>
+    <div class="row text-center" style="margin-top: 50px;margin-bottom: 20px">
+	<a class="button hui" href="" ng-click="onBack()">返回</a>
+    </div>
+<script>
+
+    $(function(){
+
+		$('.form-date').datetimepicker(
+		{
+		    language:  'zh-CN',
+		    weekStart: 1,
+		    todayBtn:  1,
+		    autoclose: 1,
+		    todayHighlight: 1,
+		    startView: 2,
+		minView: 2,
+		    forceParse: 0,
+		    format: 'yyyy-mm-dd'
+		});
+
+	$("#del").modal({
+	    //设置点击背景遮罩不关闭弹框
+	    backdrop : 'static' ,
+	    //默认不显示
+	    show     : false
+
+	});
+    })
+
+</script>

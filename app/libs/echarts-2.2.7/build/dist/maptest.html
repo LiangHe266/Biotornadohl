@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script src="jquery.min.js"></script>
+<script src="build/dist/echarts.js"></script>
+</head>
+
+<body>
+<a href="#" onClick="change()">11111</a>
+<div id="map" style="height:800px;width:50%;float:left"></div>
+<script>
+require.config({
+        paths: {
+            echarts: 'build/dist'
+        }
+    });
+var map;
+var params;
+require(
+            [
+                'echarts',
+                'echarts/chart/map',
+				'echarts/chart/heatmap',
+				'echarts/util/mapData/params'
+            ],
+            function (ec) {
+                //获取图表对象
+                map = ec.init(document.getElementById('map'));
+				//注册新的地图信息
+				params=require('echarts/util/mapData/params').params;
+				params["泸州市"] = {
+					getGeoJson: function (callback) {
+						$.getJSON('泸州市.json',callback);
+					}
+				}
+            }
+    );
+//var ecConfig = require('echarts/config');
+
+var option = {
+    tooltip : {
+        trigger: 'item',
+        formatter: '{b}加盟学校数量{c}'
+    },
+    series : [
+        {
+            name: '中国',
+            type: 'map',
+            mapType: '泸州市',
+			hoverable:false,
+            itemStyle:{
+                normal:{label:{show:true}},
+                emphasis:{label:{show:true}}
+            },
+            data:[
+                {name:'泸县',selected:true,value:2},
+				{name:'江阳区',selected:true,value:1}
+            ]
+        }
+    ]
+};
+
+setTimeout(function(){
+	map.setOption(option);
+},1000); 
+
+function change(){
+	params["巴中市"] = {
+		getGeoJson: function (callback) {
+			$.getJSON('巴中市.json',callback);
+		}
+	}
+	setTimeout(function(){
+		option.series[0].mapType="巴中市";
+	    map.setOption(option);
+    },1000); 
+}
+</script>
+</body>
+</html>

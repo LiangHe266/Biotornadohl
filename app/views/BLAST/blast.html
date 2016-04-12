@@ -1,0 +1,63 @@
+<!-- 满意度统计管理 -->
+
+
+
+<style type="text/css">
+div 
+{
+overflow: scroll
+}
+</style>
+
+
+
+<div class="container mt50">
+<div class="row mt2">
+  <div class="tab-content tab-bordered">
+    <div class="alert with-icon "> 
+      <span class="mp7"> 通过序列GI号查询： </span> <span class="col-md-6">
+      <input type="text" class="form-control" placeholder="请输入格式： 程序，数据库，GI号/  程序，数据库"  ng-model="searchMessage" >
+      </span>
+      
+    </div>
+    <div class="alert with-icon "> 
+    <span class="mp7">通过FAST文件查询： </span>
+   <span class="col-md-3">
+    <select  class="form-control gre" ng-model="proId" style="height:32px" data-ng-init="getProvinces()" ng-options="item.id as item.name for item in provinces" ng-change="showSeq()">
+    <option value="" selected="selected">--选择一个序列文件--</option></select></span> 
+                        <span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="searchDoctor(searchMessage)"><i class="icon-search"></i>查询</button> </span>			
+                        <span class=""><a href="#/tmNew"  class="button button-glow button-rounded button-raised button-primary" title="上传文件">上传文件</i></a></span> <span><button onclick="myFunction()" value="帮助说明"  class="button button-glow button-rounded button-raised button-primary" title="帮助说明">帮助说明</i></a></span></div>
+      <div class="row mt1">
+        <div class="col-md-12">
+          <div class="panel " style="height:564px;">
+              <div class="panel-heading ">结果解析</div>
+              <div class="panel-body">
+                <table class="table table-bordered table-hover" data-ng-init="getDoctors()">
+                  <thead>
+                    <tr>
+                      
+                    </tr>
+                  </thead>
+                  <tr ng-repeat="item in doctors" ng-dblclick="getSatisfactionByDoctor(item)">
+                    <td>
+                    {{item[0]}}</br>
+                    {{item[1]}}</br>
+                    {{item[2]}}</br>
+                    {{item[3]}}</br>
+                    {{item[4]}}</br>
+                    {{item[5]}}</br>
+                    {{item[6]}}</br>
+                    </td>
+                  </tr>
+                </table>
+               
+              </div>
+           </div>
+        </div>
+        
+<script>
+function myFunction()
+{
+        alert("BLAST板块是调用BLAST查询功能，因为连接的是外网不是很稳定 需要多试几次，请耐心等待。\n参数说明：\n第一个参数是用来搜索的blast程序。\n第二个参数指定了将要搜索的数据库。 \n第三个参数是一个包含你要查询序列的字符串，是一个序列文件GI的id。\n或者只填写前两个参数，选择一个已有的序列文件（fasta）来进行查询。\n第一个参数常用： blastn, blastp, blastx, tblast 和 tblastx.\n第二参数常用：nt,est,HTGS,wgs,pat,pdb,TSA..\n实例查询1：blastn, nt, 8332116\n实例查询2：blastn, nt  选择一个fasta");
+}
+</script>

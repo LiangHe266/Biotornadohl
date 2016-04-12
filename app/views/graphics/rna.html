@@ -1,0 +1,144 @@
+
+<style>
+    #status{
+        margin: auto;
+        -webkit-align-content: center;
+        align-items: center;
+        display: flex;
+        text-align: center;
+    }
+    #status>li{
+        list-style: none;
+        float: left;
+    }
+    .status{
+        height: 60px;
+        width: 60px;
+        line-height: 60px;
+        border-radius: 30px;
+        background:#F5F5F5;
+        border:1px solid #DDD;
+        -webkit-align-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .ddd{
+        height: 64px;
+        width: 3px;
+        background:#f56267;
+        -webkit-align-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .s{
+        height: 32px;
+        width: 3px;
+        background:#f56267;
+        -webkit-align-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .arrows{
+        height: 60px;
+        width: 80px;
+        -webkit-align-content: center;
+        align-items: center;
+        display: flex;
+        text-align: center;
+    }
+    .status,.arrows{
+        margin: auto;
+    }
+    .arrows>div{
+        height: 3px;
+        width:80px;
+        background-color: #f56267;
+    }
+    .ccc{
+        height: 60px;
+        width: 40px;
+        -webkit-align-content: center;
+        align-items: center;
+        display: flex;
+        text-align: center;
+    }
+    .bbb{
+        height: 60px;
+        width: 40px;
+        -webkit-align-content: center;
+        align-items: center;
+        display: flex;
+        text-align: center;
+    }
+    .ccc>div{
+        height: 3px;
+        width:40px;
+        background-color: #f56267;
+    }
+</style>
+
+<div class="container mt50">
+<div class="row mt2">
+  <div class="tab-content tab-bordered" data-ng-init="getmessagelist($event)">   
+     
+    <div class="tab-panel" >
+      <div class="panel mt2">
+     <span class="mp7" >打开序列：（按住Ctrl可多选）</span></br><span class="col-md-3"><select multiple class="form-control gre" ng-model="proId" style="height:64px" data-ng-init="getProvinces()"
+     ng-options="item.id as item.name for item in provinces" ><option value="" selected="selected">--选择一个序列文件--</option></select></span> 
+      </span>
+      </span> 
+      </br>
+      <span class="ml10"> <button ng-click="showSeqimg()"  class="button button-glow button-rounded button-raised button-primary"><i class="icon-search"></i> 基因组可视化（fng）</a></button></span>
+      <span class="ml10"> <button ng-click="showSeqimg2()"  class="button button-glow button-rounded button-raised button-primary"><i class="icon-search"></i> 基因组注释可视化(gbk)</a></button></span>
+     
+        <div class="tab-panel" >
+        
+      <div class="panel mt2">
+        <div class="panel-heading "> <i class="icon-map-marker gre"> </i>图像显示区</div>
+        <div class="panel-body" style=" max-width:1200px; overflow: scroll;">
+          <table  class="table table-bordered table-hover">
+
+                                          
+                    <button class="btn btn-primary" ng-click="downloadCaseFile()" >下载
+                    </button>
+            <tbody>
+              
+                <td>{{casePDFPath}}</td>
+       
+
+
+              
+                      <div id="pdfBox">
+                      <a class="media"  href="{{casePDFPath}}"></a>
+                      </div>
+
+          
+             
+            </tbody>
+          </table>
+
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
+<script type="text/javascript" id="js_1">
+
+  $(function () {
+    $("#del").modal({
+      //设置点击背景遮罩不关闭弹框
+      backdrop: 'static',
+      //默认不显示
+      show: false
+
+    });
+  });
+  
+</script>

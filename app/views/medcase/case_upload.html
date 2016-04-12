@@ -1,0 +1,171 @@
+<style>
+  .btn-dl {
+    width: 100%;
+    padding: 10px 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    color: #333;
+  }
+
+  .btn-dl:hover {
+    background-color: #e4e4e4;
+  }
+
+  .btn-dl-active {
+    background-color: #e4e4e4;
+  }
+
+  .btn-up {
+    width: 50%;
+    padding: 10px 0;
+    background-color: #fd8a23;
+    color: #fff;
+    margin-left: 25%;
+    opacity: 0.9;
+  }
+
+  .btn-up:hover {
+    opacity: 0.8;
+  }
+
+  .btn-up:active {
+    opacity: 1;
+  }
+
+  .upload-file {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+
+  .circle {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #ccc;
+  }
+
+  .status{
+    height: 70px;
+    width: 70px;
+    border-radius: 35px;
+    background: #abb6ab;
+    float: left;
+    margin-left: 2%;
+    -webkit-align-content: center;
+    align-items: center;
+    display: flex;
+    text-align: center;
+  }
+  .arrows{
+    height: 70px;
+    width: 70px;
+    float: left;
+    margin-left:2%;
+    -webkit-align-content: center;
+    align-items: center;
+    display: flex;
+    text-align: center;
+  }
+  .status div,.arrows div{
+    margin: auto;
+  }
+  .arrows>div>i{
+    color:#28B779;
+  }
+</style>
+
+<div class="container mt50">
+  <div class="row mt2">
+
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel">
+        <div class="alert with-icon ">
+          <span class="mp7"> 模糊查询： </span>
+        <span class="col-md-3">
+          <input type="text" class="form-control" placeholder="请输入查询条件(作者/文献名称)" ng-model="searchMessage"
+                 ng-keypress="onSearchKey($event)">
+        </span>
+        <span class="ml10">
+          <button class="button button-glow button-rounded button-raised button-primary" ng-click="onSearch(searchMessage)">
+            <i class="icon-search"></i> 查询
+          </button>
+        </span>
+        <span class="ml10" style="opacity: 0;">
+          <button ng-click="onAdd()" class="button button-glow button-rounded button-raised button-primary">
+            <i class="icon-plus"></i> 新增
+          </button>
+        </span>
+        </div>
+      </div>
+
+      <!-- 上传文献状态 -->
+      <div class="alert with-icon " style="display: none">
+        <div style="margin: auto">
+          <ul>
+            <li class="status apply" id="apply_1"><div>申请中</div></li>
+            <li class="arrows"><div><i class="icon icon-long-arrow-right" style="font-size: 3em"></i></div></li>
+            <li class="status pass" id="apply_2"><div>已通过</div></li>
+            <li class="arrows"><div><i class="icon icon-long-arrow-right" style="font-size: 3em"></i></div></li>
+            <li class="status reject" id="apply_3"><div>已拒绝</div></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 文档列表 -->
+      <div class="tab-panel">
+        <div class="panel mt2">
+          <div class="panel-heading ">
+            <i class="icon-map-marker gre"> </i>
+            <span>文献列表</span>
+          </div>
+          <div class="panel-body">
+
+            <table data-ng-init="myUpload()" class="table datatable table-bordered table-hover" id="case_list">
+              <thead>
+              <tr>
+                <th width="20%">文献名称</th>
+                <th width="20%">原作者</th>
+                <th width="20%">作者学校</th>
+                <th width="10%">创建时间</th>
+                <th width="10%">评分</th>
+                <th width="10%">审批状态</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="item in cases track by $index" ng-dblclick="onClickItem(item)" ng-click="applyStatus(item)">
+                <td>{{item[1]}}</td>
+                <td>{{item[2]}}</td>
+                <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td>
+                <td>{{item[5]|number:1}}</td>
+                <td style="color: {{item[8]}}">{{item[7]}}</td>
+              </tr>
+              </tbody>
+            </table>
+            <div class="row text-center">
+              <ul class="pager" id="sc_list">
+                <li class="previous"><a href="" id="first" ng-click="page($event)">首页</a></li>
+                <li class="previous"><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                <li><a href="" id="beforeSL">...</a></li>
+                <li ng-repeat="pageNumber in pager.pageNumbers">
+                  <a href="" class="" id="{{pageNumber}}" ng-click="page($event)">{{pageNumber}}</a>
+                </li>
+                <li><a href="" id="afterSL">...</a></li>
+                <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

@@ -1,0 +1,65 @@
+
+<form class="form-horizontal form-condensed" role="form" method="post" name="menuitemform" novalidate>
+<div class="container mt50">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel" >
+        <div class="panel mt2">
+          <div class="panel-heading "> <i class="icon-map-marker gre"> </i>菜单项信息</div>
+          <div class="panel-body">
+            <table class="table table-bordered">
+              <tr>
+                <td>菜单名称</td>
+                <td><input type="text" class="form-control gre" value="{{menu.name}}" readonly></td>
+                <td>父级菜单</td>
+                <td><input type="text" class="form-control gre" value="{{menu.parent_name}}" readonly></td>
+                <td>类型<span class="red_star">*<span></td>
+                <td><select ng-model="item.type" ng-options="x.id as x.name for x in types"></select>
+		</td>
+              </tr>
+              <tr>
+	        <td>菜单编码</td>
+		<td><input type="text" class="form-control gre" value="{{menu.code}}" readonly></td>
+		    <td>路径<span class="red_star">*<span></td>
+                    <td colspan="3">
+		        <input type="text" class="form-control gre" ng_model="item.path" name="path" required ng-maxlength="100" ng-change="changePath()">
+			<span style="color:red" ng-show="showPath">路径不能为空，且长度不超过100字符</span>
+		    </td>
+              </tr>
+              
+
+            </table>
+            <div class="row">
+              <hr />
+              <div class="col-md-12 text-center">
+                <button class="button mbo3 mt2" ng-click="save()">保存</button>
+                <button class="button mbo3  ml30 hui" ng-click="back()">返回</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%;">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+	<form class="form-horizontal" role="form" method='post'>
+	  <div class="container" >
+	    <p>{{msg}}</p>
+	  </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-mini btn-default" ng-click="reload()" data-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>
+</div>

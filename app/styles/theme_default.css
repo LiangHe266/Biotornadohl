@@ -1,0 +1,44 @@
+.topbar {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.topbar span.logo svg {
+    margin-top: -5px;
+    vertical-align: middle;
+}
+
+span.color_green {
+    color: #2AAC87;
+}
+
+.topbar .portrait:hover .more {
+    border-top: 5px solid #10af88;
+}
+
+#theme:hover{
+    background-color: #353535;
+}
+#dl-link:hover{
+    background-color: #353535;
+}
+
+li.notestatus:hover{
+    background-color: #353535;
+}
+#portrait:hover{
+    background-color: #353535;
+}
+
+
+.topbar .tools > ul > li {
+    color: #ddd;
+    border-left: 1px solid #434343;
+}
+
+.topbar .tools > ul > li:hover {
+    color: #10AF88;
+}
+
+#apps-bar li.active {
+    color: #10AF88;
+}

@@ -1,0 +1,60 @@
+
+<div class="container mt50">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel" >
+        <div class="panel mt2">
+          <div class="panel-heading "> <i class="icon-map-marker gre"> </i>菜单信息</div>
+          <div class="panel-body">
+          <form class="form-horizontal form-condensed" role="form" method="post" name="menuform" action="http://localhost:82/hum/file_test"  enctype="multipart/form-data">
+            <table class="table table-bordered">
+              <tr>
+                <td>名称</td>
+                <td><input type="text" class="form-control gre" name="name" required>
+                </td>
+                <td>文件</td>
+                <td><input type="file" class="form-control gre" name="file" readonly>
+                </td>
+              </tr>
+            </table>
+            <div class="rocw">
+              <hr />
+              <div class="col-md-12 text-center">
+                <input type="submit" class="button mbo3 mt2" value="保存"/>
+                <a href="javascript:void (0)" id="ajaxUpload">异步上传文件</a>
+                <a href="http://localhost:82/hum/file_test/1448883728.xls">文件下载</a>
+                <a href="javascript:void (0)" id="selectfile">选择文件</a>
+                <span id="filename"></span>
+                <a href="javascript:void (0)" id="onlyUpload">上传</a>
+                <a href="http://localhost:82/hum/report_test">报表</a>
+              </div>
+            </div>
+            </form>
+            <input type="file" id="file" class="form-control gre" name="file" style="display:none">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<img src="http://localhost:82/hum/file_test/1448883262.png"/>
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>
+</div>

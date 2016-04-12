@@ -1,0 +1,226 @@
+<div class="container mt50">
+  <div class="row">
+
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel">
+        <div class="panel mt2">
+          <div class="panel-body">
+
+            <form class="form-horizontal form-condensed" name="formRequest" role="form" ng-model="request">
+
+              <legend class="gre" note=">文献信息">案例信息</legend>
+
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="col-md-4 control-label ">案例名称：</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control gre" name="vc_name" placeholder="请输入案例名称"
+                             ng-model="request.name">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="col-md-4 control-label ">案例作者：</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control gre" name="vc_name" placeholder="请输作者名字"
+                             ng-model="request.author">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="col-md-4 control-label ">作者所在学校：</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control gre" name="vc_name" placeholder="请输入学校名称"
+                             ng-model="request.authorcompany">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="col-md-4 control-label ">关键词：</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control gre" name="vc_name" placeholder="请输入关键词"
+                             ng-model="request.key">
+                    </div>
+                    <span class="gre">&nbsp;（最多三个，用逗号隔开）</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <legend class="gre mt20" note="附加资料">附加文档等资料</legend>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="panel">
+                    <div class="panel-heading "><i class="icon-map-marker gre"> </i>文件列表</div>
+                    <div class="panel-body">
+                      <table data-ng-init="" class="table datatable table-bordered table-hover" id="upload_detail">
+                        <thead>
+                        <tr>
+                          <th>序号</th>
+                          <th>资料名称</th>
+                          <th>大小</th>
+                          <th>上传进度</th>
+                          <th>连接</th>
+                          <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr ng-repeat="item in uploader.queue track by $index" id="fi_{{$index}}">
+                          <td>{{$index + 1}}</td>
+                          <td>{{item.file.name}}</td>
+                          <td nowrap><a ng-show="uploader.isHTML5">{{ item.file.size/1024/1024|number:2 }} MB</a></td>
+                          <td>
+                            <div class="progress" style="margin-bottom: 0;" ng-show="uploader.isHTML5">
+                              <div class="progress-bar" role="progressbar"
+                                   ng-style="{ 'width': item.progress + '%' }"></div>
+                            </div>
+                          </td>
+
+                          <td><a href="{{item.response.path}}" target="_blank">{{item.response.path}}</a></td>
+
+                          <td>
+                            <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()"
+                                    ng-hide="item.isReady || item.isUploading || item.isSuccess">
+                              <span class="glyphicon glyphicon-upload"></span> 上传
+                            </button>
+                            <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()"
+                                    ng-hide="!item.isUploading">
+                              <span class="glyphicon glyphicon-ban-circle"></span> 取消
+                            </button>
+                            <button type="button" class="btn btn-danger btn-xs" ng-click="tryDelFile(item)">
+                              <span class="glyphicon glyphicon-trash"></span> 删除
+                            </button>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <button class="fileUpload button">
+                    <span>本地上传</span>
+                    <input type="file" id="local_upload" class="upload" nv-file-select uploader="uploader"
+                           accept=".doc,.docx,.ppt,.pptx,.pdf" multiple/>
+                  </button>
+                  <h4>支持doc,docx,ppt,pptx,pdf格式文件（必须上传文件）</h4>
+                </div>
+              </div>
+
+              <legend class="gre" note="文件信息">案例简述</legend>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <div class="col-md-12">
+                      <textarea rows='10' class="form-control gre" name="pat_abnormal_desc" placeholder="请输入案例简述" ng-model="request.descp"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <button class="button mbo3 mt2" ng-click="submitRequest(request)">提交申请</button>
+                  <button class="button hui mbo3 mt2 ml10" ng-click="onClickBack()">返回</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="del" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container">
+            <p>确认删除文件吗</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" ng-click="delFile()" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container">
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="onBack()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="submitComfirm" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle"
+     aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-off"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container">
+            <p>{{submitConfirmMsg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal" ng-click="doSubmit()">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  $(function () {
+
+    $("#del").modal({
+      //设置点击背景遮罩不关闭弹框
+      backdrop: 'static',
+      //默认不显示
+      show: false
+
+    });
+  })
+
+</script>
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>{{roomID}}</title>
+  <style>
+    #msglog, #messageInput {
+      border: 1px solid #ccc;
+      width: 360px;
+      height: 540px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    #messageInput {
+      height: 80px;
+      width: 400px;
+    }
+
+    .message {
+      line-height: 22px;
+    }
+
+    .message .user {
+      padding-right: 5px;
+      padding-left: 5px;
+      color: brown;
+    }
+
+    .sysMsg {
+      color: #c1bfbf;
+      padding-right: 5px;
+      padding-left: 5px;
+      font-size: 12px;
+    }
+
+    #users {
+      width: 490px;
+      padding: 0 5px 5px;
+    }
+
+    table {
+      width: 100px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-6">
+      昵称: <span id="userName"></span>
+    </div>
+    <div class="col-xs-6">
+      当前在线人数: <span id="count">{{users.length}}</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-3">
+      在线用户:
+      <table class="table datatable table-bordered table-hover">
+        <thead>
+        <tr>
+          <th width="100%" style="text-align: center">用户名</th>
+        </tr>
+        </thead>
+        <tbody id="users_box"></tbody>
+      </table>
+    </div>
+    <div class="col-xs-9">
+      <div id="msglog"></div>
+      <textarea name="message" id="messageInput" style="width:360px"></textarea><br/>
+      <button id="joinOrLeave">发送消息</button>
+      按Enter也可以键发送
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/jquery.js"></script>
+<link href="/zui/css/zui.min.css" rel="stylesheet" type="text/css">
+<script src="/zui/js/zui.min.js"></script>
+<script>
+  $(function () {
+    // ----------设置昵称-------------
+    window.addEventListener("message", function (event) {
+      document.getElementById("userName").innerHTML = event.data;
+      userName = event.data;
+      // ---------创建连接-----------
+      var socket = io();
+
+      // 加入房间
+      socket.on('connect', function () {
+        socket.emit('join', userName);
+      });
+      // 监听消息
+      socket.on('msg', function (userName, msg) {
+        var message = '' +
+                '<div class="message">' +
+                '  <span class="user">' + userName + ': </span>' +
+                '  <span class="msg">' + msg + '</span>' +
+                '</div>';
+        $('#msglog').append(message);
+        // 滚动条保持最下方
+        $('#msglog').scrollTop($('#msglog')[0].scrollHeight);
+      });
+
+      // 监听系统消息
+      socket.on('sys', function (sysMsg, users) {
+        var message = '<div class="sysMsg">' + sysMsg + '</div>';
+        $('#msglog').append(message);
+        $('#count').text(users.length);
+        $('#users').text(users);
+        $("#users_box").get(0).innerHTML="";
+        for (var i = 0; i < users.length; i++) {
+          $("#users_box").get(0).innerHTML += "<tr style='text-align:center'><td>" + users[i] + "</td></tr>"
+        }
+      });
+
+      // 发送消息
+      $('#messageInput').keydown(function (e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          var msg = $(this).val();
+          $(this).val('');
+          socket.send(msg);
+        }
+      });
+
+      // 发送消息
+      $('#joinOrLeave').click(function () {
+        var msg = $('#messageInput').val();
+        $('#messageInput').val('');
+        socket.send(msg);
+      });
+    }, false);
+  });
+</script>
+</body>
+</html>

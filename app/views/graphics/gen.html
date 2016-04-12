@@ -1,0 +1,55 @@
+
+<div class="container mt50">
+<div class="row mt2">
+  <div class="tab-content tab-bordered" data-ng-init="getmessagelist($event)">   
+     
+    <div class="tab-panel" >
+      <div class="panel mt2">
+     <span class="mp7" >打开序列：</span><span class="col-md-3"><select class="form-control gre" ng-model="proId" style="height:32px" data-ng-init="getProvinces()" 
+     ng-options="item.id as item.name for item in provinces" ><option value="" selected="selected">--选择一个序列文件--</option></select></span> 
+      </span>
+      </span> 
+      <span class="ml10"> <button ng-click="showSeqimg()"  class="button button-glow button-rounded button-raised button-primary"><i class="icon-search"></i> 基因组可视化</a></button></span>
+     
+        <div class="tab-panel" >
+        
+      <div class="panel mt2">
+        <div class="panel-heading "> <i class="icon-map-marker gre"> </i>图像显示</div>
+        <div class="panel-body" style=" max-width:1200px; overflow: scroll;">
+          <table  class="table table-bordered table-hover">
+            <thead>
+      <tr>
+              
+
+              </tr>
+            </thead>
+            <tbody>
+            
+              
+                <td>{{svgpath}}</td>
+                  
+           
+                    <legend class="gre" note="线性图">线性图</legend>
+                   <tr	ng-app="svgpathl">
+                <iframe src="{{svgpathl}}"  width="800" height="600">linear</iframe>
+                     </tr>   
+                     <legend class="gre" note="环形图">环形图</legend>
+                     <tr ng-app="svgpathc">
+                <iframe src="{{svgpathc}}"  width="800" height="600">circular</iframe>
+                     </tr>   
+            </tbody>
+             <button class="btn btn-primary" ng-click="downloadCaseFile()" >下载
+                    </button>
+          </table>
+
+          
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+

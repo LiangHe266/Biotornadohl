@@ -1,0 +1,25 @@
+html { font-family: sans-serif; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100% }
+* { margin: 0; padding: 0; }
+nav { display: block; position: fixed; width: 64px; top: -20px; }
+#apps-bar { font-size: 16px; position: fixed; display: block; left: 0; background-color: #dddddd; height: 100%; width: 64px; border: 0; z-index: 1000; top: 60px; }
+.app-bar-span { cursor: pointer; font-size: 12px; }
+.tit { margin-left: 5px; vertical-align: super; }
+#apps-bar ul { list-style: none; padding: 0; margin: 0; text-align: center; cursor: pointer; }
+#apps-bar li { padding: 8px 5px; position: relative; color: rgba(0, 0, 0, 0.65); }
+
+
+#apps-bar .first { margin-top: 80px; }
+#apps-bar li.active { background-color: #CCC; color: #2aac87; }
+#apps-bar li.active:after { color: #f8fafa; position: absolute; top: 50%; right: 0; display: block; width: 0; height: 0; margin-top: -5px; border-top: 5px solid transparent; border-bottom: 5px dashed transparent; border-right: 5px solid #eff2f8; content: " "; }
+#apps-bar .color_idx li.active:after { right: -2px; }
+#apps-bar li a:before { display: inline-block; font-style: normal; font-weight: 400; font-variant: normal; font-size: 1.35em; color: inherit; text-decoration: inherit; text-transform: none; -moz-osx-font-smoothing: grayscale; -webkit-font-smoothing: antialiased; }
+.bar-tooltip { position: absolute; background: #2d3339; color: #fff; font-weight: bold; font-size: 0.8em; padding: 5px; top: 16px; left: 65px; line-height: 1; white-space: nowrap; -webkit-border-radius: 5px; -moz-border-radius: 5px; -ms-border-radius: 5px; -o-border-radius: 5px; border-radius: 5px; display: none; }
+#apps-bar li a:hover + .bar-tooltip { display: inline; -webkit-transition-duration: 0.2s; -moz-transition-duration: 0.2s; -o-transition-duration: 0.2s; transition-duration: 0.2s; }
+
+#apps-bar li.color { border-top: 1px solid #c2c2c2; }
+#apps-bar li.sibar { width: 100%; border-top: 2px solid #000; position: absolute; padding: 10px 0; bottom: 0px; z-index: 999; background: #272B34; }
+.out li.sibar a { float: left; }
+
+nav ul li ul li { height: 10px; }
+#apps-bar nav .sidebar a { color: #333; outline:none;}
+#apps-bar nav .sidebar a:hover { color: #2aac87;  outline:none;}

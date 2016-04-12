@@ -1,0 +1,93 @@
+﻿﻿﻿
+<div class="container mt50">
+<div class="row mt2">
+  <div class="tab-content tab-bordered" data-ng-init="getmainAccounts($event)">
+    <div class="alert with-icon w"> 
+     
+      </span><span class="mp7"> 合作学校名称：</span> <span class="col-md-2">
+      <input type="text" class="form-control gre" id="name" ng-model="searchMessage"  placeholder="请输入学校名称">
+      </span> 
+      <span class="ml10">
+	  <button class="button button-glow button-rounded button-raised button-primary" ng-click="getmainAccounts()"><i class="icon-search"></i> 查询</button>
+	  </span>
+      
+    <div class="tab-panel" >
+      <div class="panel mt2">
+        <div class="panel-heading "> <i class="icon-map-marker gre"> </i>合作学校主账号管理</div>
+        <div class="panel-body" style=" max-width:1200px; overflow: scroll;">
+          <table  class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>合作学校名称</th>
+                <th>合作学校主账号</th>
+                <th>状态</th>
+				        <th>创建日期</th>
+				        <th>密码修改</th>
+				        <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+			<tr ng-repeat="main_Account in main_Accounts track by $index" ng-click="selectRow(main_Account)" name="dia" id="main_Accounts{{main_Account[0]}}" ng-dblclick="saveAccountInfo(account)">
+			    <td>{{main_Account[6]}}</td>   
+                <td>{{main_Account[1]}}</td>    
+                <td>{{main_Account[7]}}</td>
+			    <td>{{main_Account[3]}}</td>
+		    
+               <td><span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="updatepw(main_Account)">修改</button></span></td>
+			   <td><span class="ml10"><button class="button button-glow button-rounded button-raised button-primary" ng-click="operator(main_Account)">{{getOperator(main_Account)}}</button></span></td>
+               <!-- <td>
+				   <span >
+				     <a href="" ng-click="operator(main_Account)" class="gre hrf" title="修改">
+				       <i class="icon-pencil"></i></a></span>
+				</td>
+			-->
+			</tr>
+		  </tbody>
+          </table>
+
+          <div class="row text-center">
+            <ul class="pager">
+              <li class="previous" ><a href="" id="first" ng-click="page($event)">首页</a></li>
+              <li class="previous" ><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+              <li ><a href="" id="beforeSL">...</a></li>
+              <li ng-repeat="pageNumber in pageNumbers"><a href="" class="" id="{{pageNumber}}" ng-click="page($event)">{{pageNumber}}</a></li>
+              <li ><a href="" id="afterSL">...</a></li>
+              <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+              <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+  
+            
+      
+
+
+<!-- 提示框 -->
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal" ng-click="gowhere()">确定</button>
+      </div>
+    </div>
+  </div>
+</div>

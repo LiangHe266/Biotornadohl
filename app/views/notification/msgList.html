@@ -1,0 +1,133 @@
+<style>
+ .unread{
+     background-color:#ebf2f9;
+     border-bottom: solid 1px #ccc;
+     font-weight: bold;
+ }
+ .read{
+     border-bottom: solid 1px #ccc;
+ }
+</style>
+<div class="container mt50">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered" data-ng-init="getKnow($event)">
+      <div class="alert with-icon "> <span class="mp7">消息查询： </span> <span class="col-md-3">
+        <input type="text" class="form-control" placeholder="请输入消息内容或发起学校名称"  ng-model="searchMessage" ng-keypress="onSearchKey($event)">
+        </span> <span class="ml10">
+        <button class="button button-glow button-rounded button-raised button-primary" ng-click="doSearch()"><i class="icon-search"></i> 查询</button>&nbsp;&nbsp;
+        <button class="button button-glow button-rounded button-raised button-primary" ng-click="showDelFromPage()">删除整页</button>
+      </div>
+        <div class="panel" >
+          <div class="panel-heading "><i class="icon-map-marker gre"> </i>消息通知 </div>
+          <div class="panel-body" >
+            <div class="row table_row">
+            <table  class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>发起学校名称</th>
+                  <th>发送者</th>
+                  <th>消息内容</th>
+                  <th>状态</th>
+                  <th>创建日期</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="item in msgs track by $index" ng-click="onClickRow(item)" id="notify_item_{{$index}}" 
+                ng-dblclick="onReadMsg(item)" ng-class="{true: 'unread', false: 'read'}[item[5]==0]">
+                  <td>{{item[3]}}</td>
+                  <td>{{item[4]}}</td>
+                  <td>{{item[2]}}</td>
+                  <td>{{item[6]}}</td>
+                  <td>{{item[1]}}</td>
+                  <td>
+                      <a href="" ng-click="onTopMsg(item)" class="gre hrf" title="优先级"><i ng-class="{true: 'icon-hand-up', false: 'icon-hand-down'}[item[7]==0]" ></i></a></span>
+                      &nbsp;&nbsp;
+                      <a href="" ng-click="onDeleteMsg(item)" class="gre hrf" title="删除"><i class="icon-remove-sign"></i></a></span>
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="row text-center">
+              <ul class="pager" id="msgPager">
+                <li class="previous" ><a href="" id="first"  ng-click="pageMsg($event)">首页</a></li>
+                <li class="previous" ><a href="" id="prev" ng-click="pageMsg($event)">上一页</a></li>
+                <li ><a href="" id="beforeSL">...</a></li>
+                <li ng-repeat="pageNumber in pagerMsg.pageNumbers"><a href="" id="{{pageNumber}}" class="" ng-click="pageMsg($event)">{{pageNumber}}</a></li>
+                <li ><a href="" id="afterSL">...</a></li>
+                <li class="next"><a href="" id="next" ng-click="pageMsg($event)">下一页</a></li>
+                <li class="next"><a href="" id="last" ng-click="pageMsg($event)">尾页</a></li>
+                <li class="fresh"><a href="" ng-click="loadMsgData()"><i class="icon-refresh"></i></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="comfirm_msg2" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>亲,您确定要删除整页消息吗</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" ng-click="delFromPage()" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="comfirm_msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true" >
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container" >
+            <p>亲,您确定要删除该消息吗</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" ng-click="doDelete()" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+

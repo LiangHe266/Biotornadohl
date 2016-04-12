@@ -1,0 +1,246 @@
+<style>
+  .btn-dl {
+    width: 100%;
+    padding: 10px 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    color: #333;
+  }
+
+  .btn-dl:hover {
+    background-color: #fff;
+  }
+
+  .btn-up {
+    width: 50%;
+    padding: 10px 0;
+    background-color: #fd8a23;
+    color: #fff;
+    margin-left: 25%;
+  }
+</style>
+
+<div class="container mt50" data-ng-init="loadData()">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered">
+      <div class="tab-panel">
+        <div class="panel">
+          <div class="panel-heading ">
+            <i class="icon-map-marker gre"> </i>我的文献
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h4>文献统计</h4>
+                  </div>
+                </div>
+                <div class="row mt2" data-ng-init="myTotal()">
+                  <div class="col-md-4" style="text-align: center">
+                    <p>{{totalResult.count3}}</p>
+                    <p>我的收藏</p>
+                  </div>
+                  <div class="col-md-4" style="text-align: center">
+                    <p>{{totalResult.count1}}</p>
+                    <p>我的下载</p>
+                  </div>
+                  <div class="col-md-4" style="text-align: center">
+                    <p>{{totalResult.count2}}</p>
+                    <p>我的上传</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4>最近浏览</h4>
+                      </div>
+                    </div>
+                    <table data-ng-init="recentRead()" class="table datatable table-bordered table-hover" id="recent_read">
+                      <thead>
+                      <tr>
+                        <th width="50%">文献名称</th>
+                        <th width="50%">最近浏览时间</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr ng-repeat="item in cases_recent track by $index" ng-dblclick="onClickItem(item)" data-ng-init="recentPages_1()">
+                        <td>{{item[1]}}</td>
+                        <td>{{item[4]}}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+
+                    <div class="row text-center">
+                      <ul class="pager">
+                        <li>
+                          <button class="circle" id="recent_case_page_1" ng-click="recentPages_1()"></button>
+                        </li>
+                        <li>
+                          <button class="circle" id="recent_case_page_2" ng-click="recentPages_2()"></button>
+                        </li>
+                        <li>
+                          <button class="circle" id="recent_case_page_3" ng-click="recentPages_3()"></button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6" data-ng-init="casePush()">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4>文献推荐</h4>
+                      </div>
+                    </div>
+                    <div class="row" >
+                      <div class="col-md-10 col-md-offset-2">
+                        <div ng-click="gotoImp()">
+                          <img src="{{caseImp[0][7]}}" alt="{{caseImp[0][1]}}" width="200" height="200">
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <span>文献名称：
+                              <span style="font-size: 16px;color: #f70;">&nbsp;{{caseImp[0][1]}}</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <span style="font-size: 16px;">作者：
+                              <span  style="font-size: 16px;color: #f70;">&nbsp;{{caseImp[0][2]}}</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="alert with-icon ">
+        <span class="mp7"> 模糊查询： </span>
+        <span class="col-md-3">
+          <input type="text" class="form-control" placeholder="请输入查询条件(作者/文献名称)" ng-model="searchMessage"
+                 ng-keypress="onSearchKey($event)">
+        </span>
+        <span class="ml10">
+          <button class="button button-glow button-rounded button-raised button-primary" ng-click="onSearch(searchMessage)">
+            <i class="icon-search"></i> 查询
+          </button>
+        </span>
+        <span class="ml10">
+          <button ng-click="onAdd()" class="button button-glow button-rounded button-raised button-primary">
+            <i class="icon-plus"></i> 新增
+          </button>
+        </span>
+      </div>
+
+      <div class="tab-panel">
+        <div class="panel mt2">
+          <div class="panel-heading ">
+            <i class="icon-map-marker gre"> </i>文献列表
+          </div>
+          <div class="panel-body">
+            <table class="table datatable table-bordered table-hover" id="case_list">
+              <thead>
+              <tr>
+                <th width="25%">文献名称</th>
+                <th width="10%">创建人</th>
+                <th width="10%">创建时间</th>
+                <th width="10%">原作者</th>
+                <th width="20%">作者单位</th>
+                <th width="5%">评分</th>
+                <th width="20%">操作</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="item in cases track by $index" ng-dblclick="onClickItem(item)">
+                <td>{{item[1]}}</td>
+                <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td>
+                <td>{{item[10]}}</td>
+                <td>{{item[8]}}</td>
+                <td>{{item[9]|number:1}}</td>
+                <td>
+                  <span class="">
+                    <button href="" ng-click="onClickItem(item)" class="btn btn-success" title="查看">查看</button>
+                  </span>
+                  <span class="">
+                    <button ng-click="collectItem(item)" class="btn btn-success" title="收藏" id="case_list_{{item[0]}}" style="display: {{item[12]}}">点击收藏</button>
+                    <button ng-click="uncollectItem(item)" class="btn btn-success" title="收藏" id="uncase_{{item[0]}}" style="display: {{item[13]}}">取消收藏</button>
+                  </span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <div class="row text-center">
+              <ul class="pager" id="sc_list">
+                <li class="previous"><a href="" id="first" ng-click="page($event)">首页</a></li>
+                <li class="previous"><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                <li><a href="" id="beforeSL">...</a></li>
+                <li ng-repeat="pageNumber in pager.pageNumbers"><a href="" class="" id="{{pageNumber}}"
+                                                                   ng-click="page($event)">{{pageNumber}}</a></li>
+                <li><a href="" id="afterSL">...</a></li>
+                <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--删除信息提示框-->
+<div class="modal" id="del" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container">
+            <p>确定要删除文献信息？</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" ng-click="deleteItem()" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="msg" tabindex="-1" role="dialog" aria-labelledby="resizedModalTitle" aria-hidden="true">
+  <div class="modal-dialog" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="resizedModalTitle"><i class="icon-warning-sign"></i> 提示</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="container">
+            <p>{{msg}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-mini btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-mini btn-success" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

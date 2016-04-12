@@ -1,0 +1,84 @@
+<style>
+  .btn-dl {
+    width: 100%;
+    padding: 10px 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    color: #333;
+  }
+
+  .btn-dl:hover {
+    background-color: #fff;
+  }
+
+  .btn-up {
+    width: 50%;
+    padding: 10px 0;
+    background-color: #fd8a23;
+    color: #fff;
+    margin-left: 25%;
+  }
+</style>
+
+<div class="container mt50" data-ng-init="loadData()">
+  <div class="row mt2">
+    <div class="tab-content tab-bordered">
+      <div class="alert with-icon ">
+        <span class="mp7"> 模糊查询： </span>
+        <span class="col-md-3">
+          <input type="text" class="form-control" placeholder="请输入查询条件(作者/文献名称)" ng-model="searchMessage" ng-keypress="onSearchKey($event)">
+        </span>
+        <span class="ml10">
+          <button class="button button-glow button-rounded button-raised button-primary" ng-click="onSearch(searchMessage)">
+            <i class="icon-search"></i> 查询
+          </button>
+        </span>
+      </div>
+
+      <div class="tab-panel">
+        <div class="panel mt2">
+          <div class="panel-heading ">
+            <i class="icon-map-marker gre"> </i>待审批文献列表
+          </div>
+          <div class="panel-body">
+            <table class="table datatable table-bordered table-hover" id="case_list">
+              <thead>
+              <tr>
+                <th width="30%">文献名称</th>
+                <th width="10%">创建人</th>
+                <th width="20%">创建时间</th>
+                <th width="10%">原作者</th>
+                <th width="30%">作者单位</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="item in cases track by $index" ng-dblclick="onClickItem(item)">
+                <td>{{item[1]}}</td>
+                <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td>
+                <td>{{item[10]}}</td>
+                <td>{{item[8]}}</td>
+              </tr>
+              </tbody>
+            </table>
+            <div class="row text-center">
+              <ul class="pager" id="sc_list">
+                <li class="previous"><a href="" id="first" ng-click="page($event)">首页</a></li>
+                <li class="previous"><a href="" id="prev" ng-click="page($event)">上一页</a></li>
+                <li><a href="" id="beforeSL">...</a></li>
+                <li ng-repeat="pageNumber in pager.pageNumbers"><a href="" class="" id="{{pageNumber}}"
+                                                                   ng-click="page($event)">{{pageNumber}}</a></li>
+                <li><a href="" id="afterSL">...</a></li>
+                <li class="next"><a href="" id="next" ng-click="page($event)">下一页</a></li>
+                <li class="next"><a href="" id="last" ng-click="page($event)">尾页</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
